@@ -1,0 +1,10 @@
+spring:
+  datasource:
+    url: jdbc:oracle:thin:@localhost:3000:ORCLCDB
+    username: app_user
+    password: pwd
+    driver-class-name: oracle.jdbc.OracleDriver
+  kafka:
+    bootstrap-servers:
+    producer:
+      bootstrap-servers:

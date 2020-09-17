@@ -5,6 +5,8 @@ spring:
     password: pwd
     driver-class-name: oracle.jdbc.OracleDriver
   kafka:
-    bootstrap-servers:
+    bootstrap-servers: localhost:9092
     producer:
-      bootstrap-servers:
+      bootstrap-servers: localhost:9092
+    consumer:
+      bootstrap-servers: localhost:9092

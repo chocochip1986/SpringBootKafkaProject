@@ -12,7 +12,7 @@ import java.util.Map;
 @Configuration
 public class KafkaConfig {
 
-    @Value(value = "${kafka.bootstrapAddress}")
+    @Value(value = "${spring.kafka.bootstrap-servers}")
     private String bootstrapAddress;
 
     //We need to add the KafkaAdmin Spring bean, which will automatically add topics for all beans of type NewTopic

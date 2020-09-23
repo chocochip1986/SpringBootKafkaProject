@@ -6,4 +6,7 @@ public class KafkaConstants {
 
     //Kafka Group Id
     public static final String GROUP_ID_ONE = "group_one";
+
+    //Kafka Topic Partition
+    public static final int PARTITION = 10;
 }

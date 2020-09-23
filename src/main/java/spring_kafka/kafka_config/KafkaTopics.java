@@ -18,8 +18,7 @@ public class KafkaTopics {
     public NewTopic topic1() {
         return TopicBuilder
                 .name(KafkaConstants.TOPIC_ONE)
-                .config(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress)
-                .partitions(10)
+                .partitions(KafkaConstants.PARTITION)
                 .build();
     }
 }

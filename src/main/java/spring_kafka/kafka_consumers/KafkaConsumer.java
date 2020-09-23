@@ -9,6 +9,6 @@ public class KafkaConsumer {
 
     @KafkaListener(topics = KafkaConstants.TOPIC_ONE, groupId = KafkaConstants.GROUP_ID_ONE)
     public void consume(String message) {
-
+        System.out.println(message);
     }
 }

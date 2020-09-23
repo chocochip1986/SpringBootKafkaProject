@@ -10,6 +10,8 @@ import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
+import org.springframework.kafka.support.converter.BatchMessageConverter;
+import org.springframework.kafka.support.converter.BatchMessagingMessageConverter;
 import spring_kafka.constants.KafkaConstants;
 
 import java.util.HashMap;
@@ -57,8 +59,16 @@ public class KafkaConsumerConfig {
         ConcurrentKafkaListenerContainerFactory<String, String> factory = new ConcurrentKafkaListenerContainerFactory<String, String>();
         factory.setConsumerFactory(batchConsumerFactory());
         factory.setConcurrency(10);
+        factory.setMessageConverter(batchMessageConverter());
         factory.setBatchListener(true); //Starting with version 1.1, you can configure @KafkaListener methods to receive the entire batch of consumer records received from the consumer poll.
         return factory;
+    }
+
+    @Bean
+    public BatchMessageConverter batchMessageConverter() {
+        BatchMessagingMessageConverter batchMessagingMessageConverter = new BatchMessagingMessageConverter();
+        batchMessagingMessageConverter.setGenerateMessageId(true);
+        return batchMessagingMessageConverter;
     }
 
 }

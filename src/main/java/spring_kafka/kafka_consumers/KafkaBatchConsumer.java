@@ -5,11 +5,11 @@ import org.springframework.stereotype.Service;
 import spring_kafka.constants.KafkaConstants;
 
 @Service
-public class KafkaConsumer {
+public class KafkaBatchConsumer {
 
-    @KafkaListener(topics = KafkaConstants.TOPIC_ONE, groupId = KafkaConstants.GROUP_ID_ONE, containerFactory = "kafkaListenerContainerFactory")
+    @KafkaListener(topics = KafkaConstants.TOPIC_TWO, groupId = KafkaConstants.GROUP_ID_TWO, containerFactory = "kafkaBatchListenerContainerFactory")
     public void consume(String message) throws InterruptedException {
-        String finalMsg = "[Thead]: "+Thread.currentThread().getId()+"\n";
+        String finalMsg = "[Consumer Thread]: "+Thread.currentThread().getId()+"\n";
         finalMsg += "[Message]: "+message;
         System.out.println(finalMsg);
     }

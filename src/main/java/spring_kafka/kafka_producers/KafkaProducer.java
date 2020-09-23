@@ -26,7 +26,8 @@ public class KafkaProducer {
             }
 
             public void onSuccess(SendResult<String, String> result) {
-                System.out.println("Sent Message = ["+message+"] with offset = ["+result.getRecordMetadata().offset()+"]");
+                System.out.println("[Thread]: "+Thread.currentThread().getId()+"\n"
+                        +"Sent Message = ["+message+"] with offset = ["+result.getRecordMetadata().offset()+"]");
             }
         });
     }

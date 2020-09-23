@@ -18,11 +18,20 @@ public class KafkaRestController {
     public ResponseEntity<String> sendMessage(@PathVariable("id") int id) {
         switch (id) {
             case 1:
-                kafkaProducer.sendMessage(KafkaConstants.TOPIC_ONE, "Message sent for topic 1!");
+                spamThatMessageTo(KafkaConstants.TOPIC_ONE, "Message sent for topic 1!");
+                break;
+            case 2:
+                spamThatMessageTo(KafkaConstants.TOPIC_TWO, "Message sent for topic 1!");
                 break;
             default:
                 System.out.println("Nothing sent!");
         }
         return new ResponseEntity<String>("Hello World!", HttpStatus.OK);
+    }
+
+    private void spamThatMessageTo(String topic, String message) {
+        for ( int i = 0 ; i < 100 ; i++ ) {
+            kafkaProducer.sendMessageWithReply(topic, "["+i+"] "+message);
+        }
     }
 }

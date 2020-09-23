@@ -18,7 +18,15 @@ public class KafkaTopics {
     public NewTopic topic1() {
         return TopicBuilder
                 .name(KafkaConstants.TOPIC_ONE)
-                .partitions(KafkaConstants.PARTITION)
+                .partitions(KafkaConstants.PARTITION_TEN)
+                .build();
+    }
+
+    @Bean
+    public NewTopic topic2() {
+        return TopicBuilder
+                .name(KafkaConstants.TOPIC_TWO)
+                .partitions(KafkaConstants.PARTITION_FIVE)
                 .build();
     }
 }

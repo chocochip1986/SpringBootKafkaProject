@@ -7,8 +7,11 @@ import spring_kafka.constants.KafkaConstants;
 @Service
 public class KafkaConsumer {
 
-    @KafkaListener(topics = KafkaConstants.TOPIC_ONE, groupId = KafkaConstants.GROUP_ID_ONE, containerFactory = "kafkaListenerContainerFactory")
-    public void consume(String message) throws InterruptedException {
+    @KafkaListener(topics = KafkaConstants.TOPIC_ONE,
+            groupId = KafkaConstants.GROUP_ID_ONE,
+            containerFactory = "kafkaListenerContainerFactory",
+            errorHandler = "kafkaListenerErrorHandler")
+    public void consume(String message) {
         String finalMsg = "[Thead]: "+Thread.currentThread().getId()+"\n";
         finalMsg += "[Message]: "+message;
         System.out.println(finalMsg);

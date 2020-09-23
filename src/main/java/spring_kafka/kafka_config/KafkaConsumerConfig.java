@@ -10,8 +10,11 @@ import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
+import org.springframework.kafka.listener.KafkaListenerErrorHandler;
+import org.springframework.kafka.listener.ListenerExecutionFailedException;
 import org.springframework.kafka.support.converter.BatchMessageConverter;
 import org.springframework.kafka.support.converter.BatchMessagingMessageConverter;
+import org.springframework.messaging.Message;
 import spring_kafka.constants.KafkaConstants;
 
 import java.util.HashMap;
@@ -71,4 +74,15 @@ public class KafkaConsumerConfig {
         return batchMessagingMessageConverter;
     }
 
+    //Kafka Listeners who subscribe to this bean can use it to handle errors
+    @Bean
+    public KafkaListenerErrorHandler kafkaListenerErrorHandler() {
+        KafkaListenerErrorHandler kafkaListenerErrorHandler = new KafkaListenerErrorHandler() {
+            public Object handleError(Message<?> message, ListenerExecutionFailedException e) {
+                System.out.println("[ERROR ON LISTENER]: "+e.getMessage()+" for message: "+message.getPayload().toString());
+                return null;
+            }
+        };
+        return kafkaListenerErrorHandler;
+    }
 }

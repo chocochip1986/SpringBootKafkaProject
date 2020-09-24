@@ -23,6 +23,9 @@ public class KafkaRestController {
             case 2:
                 spamThatMessageTo(KafkaConstants.TOPIC_TWO, "Message sent for topic 1!");
                 break;
+            case 3:
+                spamThatMessageTo(KafkaConstants.TOPIC_THREE, "aefaw");
+                break;
             default:
                 System.out.println("Nothing sent!");
         }

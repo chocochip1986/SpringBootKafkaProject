@@ -40,6 +40,16 @@ public class KafkaConsumerConfig {
     }
 
     @Bean
+    public ConsumerFactory<String, String> consumerPersonInfoFactory() {
+        Map<String, Object> props = new HashMap<String, Object>();
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, KafkaConstants.GROUP_ID_THREE);
+        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        return new DefaultKafkaConsumerFactory<String, String>(props);
+    }
+
+    @Bean
     public ConsumerFactory<String, String> batchConsumerFactory() {
         Map<String, Object> props = new HashMap<String, Object>();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);

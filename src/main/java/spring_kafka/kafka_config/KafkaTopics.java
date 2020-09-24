@@ -29,4 +29,12 @@ public class KafkaTopics {
                 .partitions(KafkaConstants.PARTITION_FIVE)
                 .build();
     }
+
+    @Bean
+    public NewTopic topic3() {
+        return TopicBuilder
+                .name(KafkaConstants.TOPIC_THREE)
+                .partitions(KafkaConstants.PARTITION_TWO)
+                .build();
+    }
 }

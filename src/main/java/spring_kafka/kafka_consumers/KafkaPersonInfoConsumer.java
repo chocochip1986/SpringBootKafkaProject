@@ -12,7 +12,7 @@ import java.util.List;
 public class KafkaPersonInfoConsumer {
     @KafkaListener(topics = KafkaConstants.TOPIC_THREE,
             groupId = KafkaConstants.GROUP_ID_THREE,
-            containerFactory = "consumerPersonInfoFactory",
+            containerFactory = "kafkaListenerContainerFactory",
             errorHandler = "kafkaListenerErrorHandler")
     public void consume(List<Message<PersonInfo>> messages) {
 //        String finalMsg = "[Consumer Thread]: "+Thread.currentThread().getId()+"\n";

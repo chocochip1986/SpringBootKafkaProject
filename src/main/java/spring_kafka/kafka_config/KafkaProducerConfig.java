@@ -1,6 +1,7 @@
 package spring_kafka.kafka_config;
 
 import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.common.serialization.ByteArraySerializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -28,6 +29,15 @@ public class KafkaProducerConfig {
     }
 
     @Bean
+    public ProducerFactory<String, byte[]> producerByteFactory() {
+        Map<String, Object> configProps = new HashMap<String, Object>();
+        configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
+        configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+        configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class);
+        return new DefaultKafkaProducerFactory<>(configProps);
+    }
+
+    @Bean
     public ProducerFactory<String, String> producerPersonInfoFactory() {
         Map<String, Object> configProps = new HashMap<String, Object>();
         configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
@@ -44,5 +54,10 @@ public class KafkaProducerConfig {
     @Bean
     public KafkaTemplate<String, String> kafkaTemplate() {
         return new KafkaTemplate<String, String>(producerFactory());
+    }
+
+    @Bean
+    public KafkaTemplate<String, byte[]> kafkaByteTemplate() {
+        return new KafkaTemplate<>(producerByteFactory());
     }
 }

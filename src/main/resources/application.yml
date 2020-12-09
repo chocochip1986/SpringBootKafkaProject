@@ -11,4 +11,4 @@ spring:
     consumer:
       bootstrap-servers: localhost:9092
 server:
-  port: 9998
+  port: 9997

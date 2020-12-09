@@ -37,4 +37,11 @@ public class KafkaTopics {
                 .partitions(KafkaConstants.PARTITION_TWO)
                 .build();
     }
+
+    @Bean NewTopic topic() {
+        return TopicBuilder
+                .name("datasource-person-create")
+                .partitions(1)
+                .build();
+    }
 }

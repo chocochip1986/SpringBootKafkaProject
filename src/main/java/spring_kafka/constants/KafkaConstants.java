@@ -13,6 +13,6 @@ public class KafkaConstants {
 
     //Kafka Topic Partition
     public static final int PARTITION_TEN = 10;
-    public static final int PARTITION_FIVE = 5;
+    public static final int PARTITION_FIVE = 1;
     public static final int PARTITION_TWO = 2;
 }

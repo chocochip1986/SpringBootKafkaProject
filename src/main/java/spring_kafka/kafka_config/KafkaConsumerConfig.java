@@ -2,7 +2,6 @@ package spring_kafka.kafka_config;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
-import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -67,6 +66,8 @@ public class KafkaConsumerConfig {
         return factory;
     }
 
+
+    //the setConcurrency method creates N number of KafkaMessageListenerContainer instances.
     @Bean
     public ConcurrentKafkaListenerContainerFactory<String, String> kafkaBatchListenerContainerFactory() {
         ConcurrentKafkaListenerContainerFactory<String, String> factory = new ConcurrentKafkaListenerContainerFactory<String, String>();

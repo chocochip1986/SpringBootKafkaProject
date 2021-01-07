@@ -47,7 +47,7 @@ KafkaClient {
 ```
 
 2. SASL\SCRAM-SHA-256 OR SASL\SCRAM-SHA-512
-- Run the sasl-scram-512-docker-compose file
+- Run the sasl-scram-512-docker-compose.yml or sasl-scram-512-docker-compose.yml file
 - In your KafkaAdmin bean, you need to do implement set the 
   (1) "sasl.mechanism" property. There are a couple of support values (https://www.iana.org/assignments/sasl-mechanisms/sasl-mechanisms.xhtml)
   (2) "security.protocol" property. (PLAINTEXT, SSL, SASL_PLAINTEXT, SASL_SSL)

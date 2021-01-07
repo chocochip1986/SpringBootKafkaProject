@@ -22,7 +22,7 @@ public class KafkaConfig {
     public KafkaAdmin kafkaAdmin() {
         Map<String, Object> configs = new HashMap<String, Object>();
         configs.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
-        configs.put(SaslConfigs.SASL_MECHANISM, "PLAIN");
+        configs.put(SaslConfigs.SASL_MECHANISM, "SCRAM-SHA-512");
         configs.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SASL_PLAINTEXT");
         return new KafkaAdmin(configs);
     }

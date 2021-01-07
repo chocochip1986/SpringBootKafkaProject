@@ -1,6 +1,7 @@
 package spring_kafka.kafka_config;
 
 import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.common.config.SaslConfigs;
 import org.apache.kafka.common.serialization.ByteArraySerializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,7 +26,7 @@ public class KafkaProducerConfig {
         configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
         configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-        configProps.put("sasl.mechanism", "PLAIN");
+        configProps.put(SaslConfigs.SASL_MECHANISM, "SCRAM-SHA-512");
         configProps.put("security.protocol", "SASL_PLAINTEXT");
         return new DefaultKafkaProducerFactory<String, String>(configProps);
     }
@@ -36,7 +37,7 @@ public class KafkaProducerConfig {
         configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
         configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class);
-        configProps.put("sasl.mechanism", "PLAIN");
+        configProps.put(SaslConfigs.SASL_MECHANISM, "SCRAM-SHA-512");
         configProps.put("security.protocol", "SASL_PLAINTEXT");
         return new DefaultKafkaProducerFactory<>(configProps);
     }
@@ -47,7 +48,7 @@ public class KafkaProducerConfig {
         configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
         configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
-        configProps.put("sasl.mechanism", "PLAIN");
+        configProps.put(SaslConfigs.SASL_MECHANISM, "SCRAM-SHA-512");
         configProps.put("security.protocol", "SASL_PLAINTEXT");
         return new DefaultKafkaProducerFactory<String, String>(configProps);
     }

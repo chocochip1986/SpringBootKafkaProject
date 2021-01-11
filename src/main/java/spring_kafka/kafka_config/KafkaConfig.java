@@ -23,7 +23,13 @@ public class KafkaConfig {
         Map<String, Object> configs = new HashMap<String, Object>();
         configs.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
         configs.put(SaslConfigs.SASL_MECHANISM, "SCRAM-SHA-512");
-        configs.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SASL_PLAINTEXT");
+        configs.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SASL_SSL");
+        configs.put("ssl.truststore.location", "/Users/guozheng/Desktop/guozheng/SpringBootKafkaProject/scripts/docker/client/client.truststore.jks");
+        configs.put("ssl.truststore.password", "password1234");
+        configs.put("ssl.keystore.location", "/Users/guozheng/Desktop/guozheng/SpringBootKafkaProject/scripts/docker/client/client.keystore.jks");
+        configs.put("ssl.keystore.password", "password1234");
+        configs.put("ssl.key.password", "password1234");
+        configs.put("ssl.endpoint.identification.algorithm", "");
         return new KafkaAdmin(configs);
     }
 }

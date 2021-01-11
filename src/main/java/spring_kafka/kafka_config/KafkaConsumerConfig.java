@@ -38,7 +38,13 @@ public class KafkaConsumerConfig {
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         props.put(SaslConfigs.SASL_MECHANISM, "SCRAM-SHA-512");
-        props.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SASL_PLAINTEXT");
+        props.put("ssl.truststore.location", "/Users/guozheng/Desktop/guozheng/SpringBootKafkaProject/scripts/docker/client/client.truststore.jks");
+        props.put("ssl.truststore.password", "password1234");
+        props.put("ssl.keystore.location", "/Users/guozheng/Desktop/guozheng/SpringBootKafkaProject/scripts/docker/client/client.keystore.jks");
+        props.put("ssl.keystore.password", "password1234");
+        props.put("ssl.key.password", "password1234");
+        props.put("ssl.endpoint.identification.algorithm", "");
+        props.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SASL_SSL");
         return new DefaultKafkaConsumerFactory<String, String>(props);
     }
 
@@ -50,7 +56,13 @@ public class KafkaConsumerConfig {
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         props.put(SaslConfigs.SASL_MECHANISM, "SCRAM-SHA-512");
-        props.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SASL_PLAINTEXT");
+        props.put("ssl.truststore.location", "/Users/guozheng/Desktop/guozheng/SpringBootKafkaProject/scripts/docker/client/client.truststore.jks");
+        props.put("ssl.truststore.password", "password1234");
+        props.put("ssl.keystore.location", "/Users/guozheng/Desktop/guozheng/SpringBootKafkaProject/scripts/docker/client/client.keystore.jks");
+        props.put("ssl.keystore.password", "password1234");
+        props.put("ssl.key.password", "password1234");
+        props.put("ssl.endpoint.identification.algorithm", "");
+        props.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SASL_SSL");
         return new DefaultKafkaConsumerFactory<String, String>(props);
     }
 
@@ -62,7 +74,13 @@ public class KafkaConsumerConfig {
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         props.put(SaslConfigs.SASL_MECHANISM, "SCRAM-SHA-512");
-        props.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SASL_PLAINTEXT");
+        props.put("ssl.truststore.location", "/Users/guozheng/Desktop/guozheng/SpringBootKafkaProject/scripts/docker/client/client.truststore.jks");
+        props.put("ssl.truststore.password", "password1234");
+        props.put("ssl.keystore.location", "/Users/guozheng/Desktop/guozheng/SpringBootKafkaProject/scripts/docker/client/client.keystore.jks");
+        props.put("ssl.keystore.password", "password1234");
+        props.put("ssl.key.password", "password1234");
+        props.put("ssl.endpoint.identification.algorithm", "");
+        props.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SASL_SSL");
         return new DefaultKafkaConsumerFactory<String, String>(props);
     }
 

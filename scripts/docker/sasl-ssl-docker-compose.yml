@@ -16,6 +16,7 @@ services:
   #      ALLOW_ANONYMOUS_LOGIN: "yes"
   kafka:
     image: 'docker.io/bitnami/kafka:2.7.0-debian-10-r16'
+    hostname: 'kafka'
     ports:
       - '9092:9092'
     environment:
@@ -52,8 +53,12 @@ services:
       #      SSL
       KAFKA_CFG_CLIENT_AUTH: "required"
       KAFKA_CFG_SSL_KEYSTORE_PASSWORD: "password1234"
+      KAFKA_CFG_SSL_KEYSTORE_LOCATION: "/opt/bitnami/kafka/config/certs/kafka.keystore.jks"
       KAFKA_CFG_SSL_TRUSTSTORE_PASSWORD: "password1234"
+      KAFKA_CFG_SSL_TRUSTSTORE_LOCATION: "/opt/bitnami/kafka/config/certs/kafka.truststore.jks"
+      KAFKA_CERTIFICATE_PASSWORD: "password1234"
       KAFKA_CFG_SSL_KEY_PASSWORD: "password1234"
+      KAFKA_CFG_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: ""
 
       KAFKA_OPTS: "-Djava.security.auth.login.config=/opt/bitnami/kafka/config/kafka_jaas.conf"
 
@@ -66,7 +71,7 @@ services:
 
     volumes:
       - type: "bind"
-        source: "/System/Volumes/Data/Users/guozheng/.kafka_docker/kafka_jaas_server/keystore"
+        source: "./server"
         target:  "/opt/bitnami/kafka/config/certs"
 
     depends_on:

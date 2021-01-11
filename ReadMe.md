@@ -81,3 +81,6 @@ KafkaClient {
 ```
 -Djava.security.auth.login.config="/Users/guozheng/Desktop/guozheng/SpringBootKafkaProject/src/main/resources/kafka_jaas.conf"
 ```
+
+4. SASL\SCRAM with SSL
+- The SCRAM configurations are the same as above. I will only note the SSL configurations here

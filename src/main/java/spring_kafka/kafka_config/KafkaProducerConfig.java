@@ -3,6 +3,7 @@ package spring_kafka.kafka_config;
 import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.config.SaslConfigs;
+import org.apache.kafka.common.config.SslConfigs;
 import org.apache.kafka.common.serialization.ByteArraySerializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,12 +29,12 @@ public class KafkaProducerConfig {
         configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         configProps.put(SaslConfigs.SASL_MECHANISM, "SCRAM-SHA-512");
-        configProps.put("ssl.truststore.location", "/Users/guozheng/Desktop/guozheng/SpringBootKafkaProject/scripts/docker/client/client.truststore.jks");
-        configProps.put("ssl.truststore.password", "password1234");
-        configProps.put("ssl.keystore.location", "/Users/guozheng/Desktop/guozheng/SpringBootKafkaProject/scripts/docker/client/client.keystore.jks");
-        configProps.put("ssl.keystore.password", "password1234");
-        configProps.put("ssl.key.password", "password1234");
-        configProps.put("ssl.endpoint.identification.algorithm", "");
+        configProps.put(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, "/Users/guozheng/Desktop/guozheng/SpringBootKafkaProject/scripts/docker/client/client.truststore.jks");
+        configProps.put(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG, "password1234");
+        configProps.put(SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG, "/Users/guozheng/Desktop/guozheng/SpringBootKafkaProject/scripts/docker/client/client.keystore.jks");
+        configProps.put(SslConfigs.SSL_KEYSTORE_PASSWORD_CONFIG, "password1234");
+        configProps.put(SslConfigs.SSL_KEY_PASSWORD_CONFIG, "password1234");
+        configProps.put(SslConfigs.SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_CONFIG, "");
         configProps.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SASL_SSL");
         return new DefaultKafkaProducerFactory<String, String>(configProps);
     }
@@ -45,12 +46,12 @@ public class KafkaProducerConfig {
         configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class);
         configProps.put(SaslConfigs.SASL_MECHANISM, "SCRAM-SHA-512");
-        configProps.put("ssl.truststore.location", "/Users/guozheng/Desktop/guozheng/SpringBootKafkaProject/scripts/docker/client/client.truststore.jks");
-        configProps.put("ssl.truststore.password", "password1234");
-        configProps.put("ssl.keystore.location", "/Users/guozheng/Desktop/guozheng/SpringBootKafkaProject/scripts/docker/client/client.keystore.jks");
-        configProps.put("ssl.keystore.password", "password1234");
-        configProps.put("ssl.key.password", "password1234");
-        configProps.put("ssl.endpoint.identification.algorithm", "");
+        configProps.put(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, "/Users/guozheng/Desktop/guozheng/SpringBootKafkaProject/scripts/docker/client/client.truststore.jks");
+        configProps.put(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG, "password1234");
+        configProps.put(SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG, "/Users/guozheng/Desktop/guozheng/SpringBootKafkaProject/scripts/docker/client/client.keystore.jks");
+        configProps.put(SslConfigs.SSL_KEYSTORE_PASSWORD_CONFIG, "password1234");
+        configProps.put(SslConfigs.SSL_KEY_PASSWORD_CONFIG, "password1234");
+        configProps.put(SslConfigs.SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_CONFIG, "");
         configProps.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SASL_SSL");
         return new DefaultKafkaProducerFactory<>(configProps);
     }
@@ -62,12 +63,12 @@ public class KafkaProducerConfig {
         configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
         configProps.put(SaslConfigs.SASL_MECHANISM, "SCRAM-SHA-512");
-        configProps.put("ssl.truststore.location", "/Users/guozheng/Desktop/guozheng/SpringBootKafkaProject/scripts/docker/client/client.truststore.jks");
-        configProps.put("ssl.truststore.password", "password1234");
-        configProps.put("ssl.keystore.location", "/Users/guozheng/Desktop/guozheng/SpringBootKafkaProject/scripts/docker/client/client.keystore.jks");
-        configProps.put("ssl.keystore.password", "password1234");
-        configProps.put("ssl.key.password", "password1234");
-        configProps.put("ssl.endpoint.identification.algorithm", "");
+        configProps.put(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, "/Users/guozheng/Desktop/guozheng/SpringBootKafkaProject/scripts/docker/client/client.truststore.jks");
+        configProps.put(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG, "password1234");
+        configProps.put(SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG, "/Users/guozheng/Desktop/guozheng/SpringBootKafkaProject/scripts/docker/client/client.keystore.jks");
+        configProps.put(SslConfigs.SSL_KEYSTORE_PASSWORD_CONFIG, "password1234");
+        configProps.put(SslConfigs.SSL_KEY_PASSWORD_CONFIG, "password1234");
+        configProps.put(SslConfigs.SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_CONFIG, "");
         configProps.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SASL_SSL");
         return new DefaultKafkaProducerFactory<String, String>(configProps);
     }

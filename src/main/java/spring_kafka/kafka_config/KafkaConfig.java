@@ -3,6 +3,7 @@ package spring_kafka.kafka_config;
 import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.common.config.SaslConfigs;
+import org.apache.kafka.common.config.SslConfigs;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,12 +25,12 @@ public class KafkaConfig {
         configs.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
         configs.put(SaslConfigs.SASL_MECHANISM, "SCRAM-SHA-512");
         configs.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SASL_SSL");
-        configs.put("ssl.truststore.location", "/Users/guozheng/Desktop/guozheng/SpringBootKafkaProject/scripts/docker/client/client.truststore.jks");
-        configs.put("ssl.truststore.password", "password1234");
-        configs.put("ssl.keystore.location", "/Users/guozheng/Desktop/guozheng/SpringBootKafkaProject/scripts/docker/client/client.keystore.jks");
-        configs.put("ssl.keystore.password", "password1234");
-        configs.put("ssl.key.password", "password1234");
-        configs.put("ssl.endpoint.identification.algorithm", "");
+        configs.put(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, "/Users/guozheng/Desktop/guozheng/SpringBootKafkaProject/scripts/docker/client/client.truststore.jks");
+        configs.put(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG, "password1234");
+        configs.put(SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG, "/Users/guozheng/Desktop/guozheng/SpringBootKafkaProject/scripts/docker/client/client.keystore.jks");
+        configs.put(SslConfigs.SSL_KEYSTORE_PASSWORD_CONFIG, "password1234");
+        configs.put(SslConfigs.SSL_KEY_PASSWORD_CONFIG, "password1234");
+        configs.put(SslConfigs.SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_CONFIG, "");
         return new KafkaAdmin(configs);
     }
 }

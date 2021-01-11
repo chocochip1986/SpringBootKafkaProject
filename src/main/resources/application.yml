@@ -12,11 +12,11 @@ spring:
       bootstrap-servers: localhost:9092
 server:
   port: 9997
-#  ssl:
-#    enabled: true
-#    key-store-type: PKCS12
-#    key-store: src/main/resources/client.keystore.jks
-#    key-store-password: password1234
-#    key-alias: localhost
-#    trust-store: src/main/resources/client.truststore.jks
-#    trust-store-password: password1234
+  ssl:
+    enabled: true
+    key-store-type: PKCS12
+    key-store: src/main/resources/client.keystore.jks
+    key-store-password: password1234
+    key-alias: localhost
+    trust-store: src/main/resources/client.truststore.jks
+    trust-store-password: password1234

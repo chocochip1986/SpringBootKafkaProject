@@ -1,0 +1,78 @@
+version: "2.1"
+services:
+  zookeeper:
+    image: 'docker.io/bitnami/zookeeper:3.6.2-debian-10-r111'
+    ports:
+      - '2181:2181'
+    environment:
+      ZOO_ENABLE_AUTH: "yes"
+      ZOO_SERVER_USERS: "sasl_user"
+      ZOO_SERVER_PASSWORDS: "sasl_user_password"
+      ZOO_CLIENT_USER: "sasl_user"
+      ZOO_CLIENT_PASSWORD: "sasl_user_password"
+
+      ZOO_LOG_LEVEL: "DEBUG"
+  #       We set “ALLOW_ANONYMOUS_LOGIN” configuration to true because we want to allow users to connect to ZooKeeper easily (without authentication), this configuration is not suitable for production use.
+  #      ALLOW_ANONYMOUS_LOGIN: "yes"
+  kafka:
+    image: 'docker.io/bitnami/kafka:2.7.0-debian-10-r16'
+    hostname: 'kafka'
+    ports:
+      - '9092:9092'
+    environment:
+      KAFKA_CFG_BROKER_ID: 1
+      KAFKA_CFG_LISTENERS: "CLIENT://kafka:9092,INTERNAL://kafka:9093"
+      KAFKA_CFG_ADVERTISED_LISTENERS: "CLIENT://localhost:9092,INTERNAL://kafka:9093"
+      KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: "CLIENT:SASL_SSL,INTERNAL:SASL_SSL"
+
+      KAFKA_CFG_ZOOKEEPER_CONNECT: "zookeeper:2181"
+      #      Set either KAFKA_INTER_BROKER_LISTENER_NAME or KAFKA_SECURITY_INTER_BROKER_PROTOCOL; not both
+      KAFKA_INTER_BROKER_LISTENER_NAME: "INTERNAL"
+      #      KAFKA_SECURITY_INTER_BROKER_PROTOCOL: "SASL_PLAINTEXT"
+      #      ALLOW_PLAINTEXT_LISTENER: "yes"
+
+      #     "SCRAM-SHA-512,SCRAM-SHA-256,PLAIN, GSSAPI(default)"
+      KAFKA_CFG_SASL_ENABLED_MECHANISMS: "SCRAM-SHA-512"
+      KAFKA_CFG_SASL_MECHANISM_INTER_BROKER_PROTOCOL: "SCRAM-SHA-512"
+      KAFKA_CFG_AUTHORIZER_CLASS_NAME: "kafka.security.auth.SimpleAclAuthorizer"
+      KAFKA_SUPER_USERS: "User:admin"
+      #      KAFKA_ZOOKEEPER_SET_ACL: "true"
+
+      KAFKA_INTER_BROKER_USER: "admin"
+      KAFKA_INTER_BROKER_PASSWORD: "admin-secret"
+
+      #     In order for KAFKA Clients to connect to Kafka Brokers
+      KAFKA_CLIENT_USERS: "alice"
+      KAFKA_CLIENT_PASSWORDS: "alice-secret"
+
+      #     In order to authenticate Kafka against a Zookeeper server with SASL, you should provide the environment variables below:
+      KAFKA_ZOOKEEPER_PROTOCOL: "SASL"
+      KAFKA_ZOOKEEPER_USER: "sasl_user"
+      KAFKA_ZOOKEEPER_PASSWORD: "sasl_user_password"
+
+      #      SSL
+      KAFKA_CFG_CLIENT_AUTH: "required"
+      KAFKA_CFG_SSL_KEYSTORE_PASSWORD: "password1234"
+      KAFKA_CFG_SSL_KEYSTORE_LOCATION: "/opt/bitnami/kafka/config/certs/kafka.keystore.jks"
+      KAFKA_CFG_SSL_TRUSTSTORE_PASSWORD: "password1234"
+      KAFKA_CFG_SSL_TRUSTSTORE_LOCATION: "/opt/bitnami/kafka/config/certs/kafka.truststore.jks"
+      KAFKA_CERTIFICATE_PASSWORD: "password1234"
+      KAFKA_CFG_SSL_KEY_PASSWORD: "password1234"
+      KAFKA_CFG_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: ""
+
+      KAFKA_OPTS: "-Djava.security.auth.login.config=/opt/bitnami/kafka/config/kafka_jaas.conf"
+
+    #If JAAS configuration is defined at different levels, the order of precedence used is:
+    #
+    #Broker configuration property listener.name.{listenerName}.{saslMechanism}.sasl.jaas.config
+    #{listenerName}.KafkaServer section of static JAAS configuration
+    #KafkaServer section of static JAAS configuration
+    #      KAFKA_CFG_SASL_JAAS_CONFIG: "listener.name.client.plain.sasl.jaas.config=org.apache.kafka.common.security.plain.PlainLoginModule required username=\"admin\" password=\"admin\" user_admin=\"admin\" user_alice=\"alice-secret\";"
+
+    volumes:
+      - type: "bind"
+        source: "./server"
+        target:  "/opt/bitnami/kafka/config/certs"
+
+    depends_on:
+      - zookeeper

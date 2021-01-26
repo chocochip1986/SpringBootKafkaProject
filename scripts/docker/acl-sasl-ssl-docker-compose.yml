@@ -35,8 +35,8 @@ services:
       KAFKA_CFG_SASL_ENABLED_MECHANISMS: "SCRAM-SHA-512"
       KAFKA_CFG_SASL_MECHANISM_INTER_BROKER_PROTOCOL: "SCRAM-SHA-512"
       KAFKA_CFG_AUTHORIZER_CLASS_NAME: "kafka.security.auth.SimpleAclAuthorizer"
-      KAFKA_SUPER_USERS: "User:admin"
-      #      KAFKA_ZOOKEEPER_SET_ACL: "true"
+      KAFKA_CFG_SUPER_USERS: "User:admin"
+      KAFKA_CFG_ZOOKEEPER_SET_ACL: "false"
 
       KAFKA_INTER_BROKER_USER: "admin"
       KAFKA_INTER_BROKER_PASSWORD: "admin-secret"

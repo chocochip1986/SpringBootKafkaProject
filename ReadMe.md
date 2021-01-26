@@ -84,3 +84,41 @@ KafkaClient {
 
 4. SASL\SCRAM with SSL
 - The SCRAM configurations are the same as above. I will only note the SSL configurations here
+
+## KAFKA WITH ACL
+====================
+1. You will need to set a couple of things within the docker compose file. In the environments section of the kafka docker setup, add these:
+```
+KAFKA_CFG_AUTHORIZER_CLASS_NAME: "kafka.security.auth.SimpleAclAuthorizer"
+KAFKA_CFG_SUPER_USERS: "User:admin"
+```
+The reason for setting `admin` to be a super user is because `admin` used as the inter-broker username. If you don't set this, the kafka broker will not be able to update metadata as it itself does not have the correct authorizations.
+If you have more than 1 super user you can add to the list using the semicolon as a delimiter. Do note that the username specified here is case sensitive.
+Note that zookeeper.set.acl is defaulted to false so if you haven't added it, it's ok not to any way. Zookeeper.set.acl is used if you need to modify the Zookeeper nodes(znode) but if we're just setting ACLs on which Kafka Client can produce or consume stuff that it's fine not to set.
+```
+KAFKA_CFG_ZOOKEEPER_SET_ACL: "false"
+```
+2. Next, in order for you to create topics FROM the a kafka client, you need to specify a .conf file with similar properties as the following depending on the authentication types you're using.
+For example, if you are SASL with SSL, your conf file may look like this. As if you can see below, the `username` and `password` set in the `sasl.jaas.config` property must be the super user.
+I think the reason for this is because, by default, with ACL enabled, no resource will be available for anyone unless specified, explicitly, otherwise. Hence you're gonna need a super user to create the topics from an external source.
+```
+security.protocol=SASL_SSL
+sasl.mechanism=SCRAM-SHA-512
+ssl.truststore.location=<Absolute Path to your client truststore>/client.truststore.jks
+ssl.truststore.password=<Truststore Password>
+ssl.keystore.location=<Absolute Path to your client keystore>/client.keystore.jks
+ssl.keystore.password=<KeyStore Password>
+ssl.key.password=<SSL Password>
+ssl.endpoint.identification.algorithm=<intentionally kept blank>
+sasl.jaas.config=org.apache.kafka.common.security.scram.ScramLoginModule required username="admin" password="admin-secret";
+```
+Once this file is setup, you can then run the Kafka CLI tool `kafka-acls` to set some ACLs.
+I have not found any other way to set the ACLs.
+Example of allowing the user `alice` to create, describe, and read topics
+```
+/usr/local/bin/kafka-acls --bootstrap-server localhost:9092 --command-config ./src/main/resources/admin.conf --add --allow-principal User:alice --operation Create --operation Describe --operation Read --topic test
+```
+Next, if you need to verify your ACLs, you should be able to list the ACLs for the given topic
+```
+/usr/local/bin/kafka-acls --bootstrap-server localhost:9092 --command-config ./src/main/resources/admin.conf --list --topic test
+```

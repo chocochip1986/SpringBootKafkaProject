@@ -23,6 +23,7 @@
     <modules>
         <module>simple-kafka-setup</module>
         <module>simple-batch-kafka-setup</module>
+        <module>commons</module>
     </modules>
 
     <properties>

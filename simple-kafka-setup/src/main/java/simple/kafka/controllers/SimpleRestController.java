@@ -1,5 +1,6 @@
 package simple.kafka.controllers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -8,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import simple.kafka.producers.KafkaByteProducer;
 import simple.kafka.producers.KafkaProducer;
+import spring.kafka.commons.entities.Person;
 
 @RestController
 public class SimpleRestController {
@@ -23,6 +25,12 @@ public class SimpleRestController {
             producer.sendMessage("topic.one", "HAHAHAHAHHAHAHAH");
         } else if (id.equalsIgnoreCase("2")) {
             byteProducer.sendMessage("topic.two", "In Bytes YO");
+        } else if (id.equalsIgnoreCase("3")) {
+            try {
+                byteProducer.sendMessage("topic.three", Person.builder().name("NAME HAHHAHA").build());
+            } catch (JsonProcessingException e) {
+                return new ResponseEntity<>("NO SWEE LEH", HttpStatus.BAD_REQUEST);
+            }
         }
 
         return new ResponseEntity<>("SWEE LA", HttpStatus.OK);

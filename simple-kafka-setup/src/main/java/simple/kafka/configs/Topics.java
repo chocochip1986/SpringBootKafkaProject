@@ -23,4 +23,12 @@ public class Topics {
                 .partitions(1)
                 .build();
     }
+
+    @Bean
+    public NewTopic topic3() {
+        return TopicBuilder
+                .name("topic.three")
+                .partitions(1)
+                .build();
+    }
 }

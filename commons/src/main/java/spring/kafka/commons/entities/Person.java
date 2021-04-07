@@ -1,4 +1,4 @@
-package simple.batch.kafka.entities;
+package spring.kafka.commons.entities;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -7,9 +7,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
-import simple.batch.kafka.entities.Person;
 import simple.batch.kafka.producers.KafkaByteProducer;
 import simple.batch.kafka.producers.KafkaProducer;
+import spring.kafka.commons.entities.Person;
 
 import java.util.function.Consumer;
 

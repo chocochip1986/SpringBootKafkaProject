@@ -8,7 +8,7 @@ import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
 import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.util.concurrent.ListenableFutureCallback;
-import simple.batch.kafka.entities.Person;
+import spring.kafka.commons.entities.Person;
 
 import java.nio.charset.StandardCharsets;
 

@@ -1,14 +1,18 @@
 package simple.batch.kafka.configs;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.ByteArrayDeserializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
+import org.springframework.kafka.support.converter.BatchMessagingMessageConverter;
+import org.springframework.kafka.support.converter.ByteArrayJsonMessageConverter;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,6 +21,9 @@ import java.util.Map;
 public class KafkaConsumerConfigs {
     @Value(value = "${spring.kafka.bootstrap-servers}")
     private String bootstrapAddress;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Bean
     public ConsumerFactory<String, String> consumerFactory() {
@@ -39,6 +46,16 @@ public class KafkaConsumerConfigs {
     }
 
     @Bean
+    public ConsumerFactory<String, byte[]> consumerWithConverterFactory() {
+        Map<String, Object> props = new HashMap<String, Object>();
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, "group.three");
+        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, ByteArrayDeserializer.class);
+        return new DefaultKafkaConsumerFactory<>(props);
+    }
+
+    @Bean
     public ConcurrentKafkaListenerContainerFactory<String, byte[]> kafkaByteListenerContainerFactory() {
         ConcurrentKafkaListenerContainerFactory<String, byte[]> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerByteFactory());
@@ -54,5 +71,20 @@ public class KafkaConsumerConfigs {
         factory.setConcurrency(1);
         factory.setBatchListener(true);
         return factory;
+    }
+
+    @Bean
+    public ConcurrentKafkaListenerContainerFactory<String, byte[]> kafkaListenerWithConverterContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, byte[]> factory = new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(consumerWithConverterFactory());
+        factory.setConcurrency(1);
+        factory.setBatchListener(true);
+        factory.setMessageConverter(new BatchMessagingMessageConverter(converter()));
+        return factory;
+    }
+
+    @Bean
+    public ByteArrayJsonMessageConverter converter() {
+        return new ByteArrayJsonMessageConverter(objectMapper);
     }
 }

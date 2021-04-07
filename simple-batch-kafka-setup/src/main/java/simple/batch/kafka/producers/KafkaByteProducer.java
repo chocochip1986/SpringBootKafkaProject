@@ -1,11 +1,14 @@
 package simple.batch.kafka.producers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
 import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.util.concurrent.ListenableFutureCallback;
+import simple.batch.kafka.entities.Person;
 
 import java.nio.charset.StandardCharsets;
 
@@ -14,8 +17,15 @@ public class KafkaByteProducer {
     @Autowired
     private KafkaTemplate<String, byte[]> kafkaByteTemplate;
 
+    @Autowired
+    private ObjectMapper objectMapper;
+
     public void sendMessage(String topic, String message) {
         kafkaByteTemplate.send(topic, message.getBytes(StandardCharsets.UTF_8));
+    }
+
+    public void sendMessage(String topic, Person person) throws JsonProcessingException {
+        kafkaByteTemplate.send(topic, objectMapper.writeValueAsBytes(person));
     }
 
     public void sendMessageWithReply(String topic, final String message) {

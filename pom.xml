@@ -24,6 +24,7 @@
         <module>simple-kafka-setup</module>
         <module>simple-batch-kafka-setup</module>
         <module>commons</module>
+        <module>sasl-plaintext</module>
     </modules>
 
     <properties>

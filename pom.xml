@@ -22,6 +22,7 @@
     </build>
     <modules>
         <module>simple-kafka-setup</module>
+        <module>simple-batch-kafka-setup</module>
     </modules>
 
     <dependencies>

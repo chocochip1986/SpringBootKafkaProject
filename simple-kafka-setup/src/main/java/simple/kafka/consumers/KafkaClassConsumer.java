@@ -4,7 +4,6 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 import spring.kafka.commons.entities.Person;
 
-import java.nio.charset.StandardCharsets;
 
 @Service
 public class KafkaClassConsumer {

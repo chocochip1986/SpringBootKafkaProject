@@ -20,3 +20,10 @@ server:
     key-alias: localhost
     trust-store: src/main/resources/client.truststore.jks
     trust-store-password: password1234
+logging:
+  level:
+    org.hibernate.SQL: info
+    org.axonframework.kafka: info
+    org.springframework.kafka: debug
+    org.springframework.retry: debug
+    org.apache.kafka.clients: error

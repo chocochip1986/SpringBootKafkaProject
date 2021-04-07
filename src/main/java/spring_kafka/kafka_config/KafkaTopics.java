@@ -22,6 +22,11 @@ public class KafkaTopics {
     }
 
     @Bean
+    public NewTopic retryTopic() {
+        return TopicBuilder.name("retry.topic").partitions(KafkaConstants.PARTITION_TEN).build();
+    }
+
+    @Bean
     public NewTopic topic2() {
         return TopicBuilder
                 .name(KafkaConstants.TOPIC_TWO)

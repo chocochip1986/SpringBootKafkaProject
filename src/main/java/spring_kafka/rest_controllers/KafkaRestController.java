@@ -64,7 +64,7 @@ public class KafkaRestController {
     }
 
     private void spamThatMessageTo(String topic, String message) {
-        for ( int i = 0 ; i < 100 ; i++ ) {
+        for ( int i = 0 ; i < 1 ; i++ ) {
             kafkaProducer.sendMessageWithReply(topic, "["+i+"] "+message);
         }
     }

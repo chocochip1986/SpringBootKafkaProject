@@ -6,6 +6,7 @@
 
     <groupId>org.example</groupId>
     <artifactId>SpringBootKafkaProject</artifactId>
+    <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
     <build>
         <plugins>
@@ -13,12 +14,15 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>11</source>
-                    <target>11</target>
+                    <source>15</source>
+                    <target>15</target>
                 </configuration>
             </plugin>
         </plugins>
     </build>
+    <modules>
+        <module>simple-kafka-setup</module>
+    </modules>
 
     <dependencies>
         <dependency>
@@ -60,6 +64,12 @@
             <artifactId>ojdbc8</artifactId>
             <groupId>com.oracle</groupId>
             <version>12.2.0.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>1.4.200</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->

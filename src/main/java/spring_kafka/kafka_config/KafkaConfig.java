@@ -23,14 +23,14 @@ public class KafkaConfig {
     public KafkaAdmin kafkaAdmin() {
         Map<String, Object> configs = new HashMap<String, Object>();
         configs.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
-        configs.put(SaslConfigs.SASL_MECHANISM, "SCRAM-SHA-512");
-        configs.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SASL_SSL");
-        configs.put(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, "/Users/guozheng/Desktop/guozheng/SpringBootKafkaProject/scripts/docker/client/client.truststore.jks");
-        configs.put(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG, "password1234");
-        configs.put(SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG, "/Users/guozheng/Desktop/guozheng/SpringBootKafkaProject/scripts/docker/client/client.keystore.jks");
-        configs.put(SslConfigs.SSL_KEYSTORE_PASSWORD_CONFIG, "password1234");
-        configs.put(SslConfigs.SSL_KEY_PASSWORD_CONFIG, "password1234");
-        configs.put(SslConfigs.SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_CONFIG, "");
+//        configs.put(SaslConfigs.SASL_MECHANISM, "SCRAM-SHA-512");
+//        configs.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SASL_SSL");
+//        configs.put(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, "/Users/guozheng/Desktop/guozheng/SpringBootKafkaProject/scripts/docker/client/client.truststore.jks");
+//        configs.put(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG, "password1234");
+//        configs.put(SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG, "/Users/guozheng/Desktop/guozheng/SpringBootKafkaProject/scripts/docker/client/client.keystore.jks");
+//        configs.put(SslConfigs.SSL_KEYSTORE_PASSWORD_CONFIG, "password1234");
+//        configs.put(SslConfigs.SSL_KEY_PASSWORD_CONFIG, "password1234");
+//        configs.put(SslConfigs.SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_CONFIG, "");
         return new KafkaAdmin(configs);
     }
 }

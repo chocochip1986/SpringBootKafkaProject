@@ -15,5 +15,6 @@ public class KafkaConsumer {
         String finalMsg = "[Thead]: "+Thread.currentThread().getId()+"\n";
         finalMsg += "[Message]: "+message;
         System.out.println(finalMsg);
+        throw new RuntimeException("HELLO SIR");
     }
 }

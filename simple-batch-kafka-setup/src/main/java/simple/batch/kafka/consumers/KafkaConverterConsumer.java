@@ -2,6 +2,7 @@ package simple.batch.kafka.consumers;
 
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
+import spring.kafka.commons.entities.Person;
 
 import java.util.List;
 

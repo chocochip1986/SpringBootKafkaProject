@@ -26,6 +26,7 @@
         <module>commons</module>
         <module>sasl-plaintext</module>
         <module>sasl-scram</module>
+        <module>sasl-scram-ssl-setup</module>
     </modules>
 
     <properties>

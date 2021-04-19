@@ -27,6 +27,7 @@
         <module>sasl-plaintext</module>
         <module>sasl-scram</module>
         <module>sasl-scram-ssl-setup</module>
+        <module>simple-kafka-with-recovery</module>
     </modules>
 
     <properties>

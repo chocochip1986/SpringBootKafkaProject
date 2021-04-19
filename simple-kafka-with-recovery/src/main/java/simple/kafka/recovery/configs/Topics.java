@@ -30,6 +30,14 @@ public class Topics {
     }
 
     @Bean
+    public NewTopic topic2Dlt() {
+        return TopicBuilder
+                .name("topic.two.dlt")
+                .partitions(1)
+                .build();
+    }
+
+    @Bean
     public NewTopic topic3() {
         return TopicBuilder
                 .name("topic.three")

@@ -15,6 +15,8 @@ import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.KafkaOperations;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.listener.DeadLetterPublishingRecoverer;
+import org.springframework.kafka.listener.RecoveringBatchErrorHandler;
+import org.springframework.kafka.listener.SeekToCurrentBatchErrorHandler;
 import org.springframework.kafka.listener.SeekToCurrentErrorHandler;
 import org.springframework.kafka.support.converter.ByteArrayJsonMessageConverter;
 import org.springframework.util.backoff.FixedBackOff;
@@ -32,6 +34,9 @@ public class KafkaConsumerConfigs {
 
     @Autowired
     private KafkaTemplate<String, String> kafkaTemplate;
+
+    @Autowired
+    private KafkaTemplate<String, byte[]> kafkaByteTemplate;
 
     @Bean
     public ConsumerFactory<String, String> consumerFactory() {
@@ -58,6 +63,8 @@ public class KafkaConsumerConfigs {
         ConcurrentKafkaListenerContainerFactory<String, byte[]> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerByteFactory());
         factory.setConcurrency(1);
+        factory.setBatchErrorHandler(ebh());
+        factory.setBatchListener(true);
         return factory;
     }
 
@@ -84,5 +91,12 @@ public class KafkaConsumerConfigs {
         DeadLetterPublishingRecoverer recoverer = new DeadLetterPublishingRecoverer((KafkaOperations<String, String>) kafkaTemplate,
                 (r,e) -> new TopicPartition("topic.one.dlt", -1));
         return  new SeekToCurrentErrorHandler(recoverer, new FixedBackOff(0L, 0L));
+    }
+
+    @Bean
+    public RecoveringBatchErrorHandler ebh() {
+        DeadLetterPublishingRecoverer recoverer = new DeadLetterPublishingRecoverer((KafkaOperations<String, byte[]>) kafkaByteTemplate,
+                (r,e) -> new TopicPartition("topic.two.dlt", -1));
+        return new RecoveringBatchErrorHandler(recoverer, new FixedBackOff(0L, 0L));
     }
 }

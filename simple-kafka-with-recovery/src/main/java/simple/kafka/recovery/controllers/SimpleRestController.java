@@ -38,7 +38,7 @@ public class SimpleRestController {
         return new ResponseEntity<>("SWEE LA", HttpStatus.OK);
     }
 
-    @GetMapping(value = "/v1/api/topic/{id}")
+    @GetMapping(value = "/v1/api/topic/array/{id}")
     public ResponseEntity<String> triggerForLoop(@PathVariable("id") String id) {
         for( int i = 0 ; i < 10 ; i++ ) {
             if(id.equalsIgnoreCase("1")) {

@@ -16,6 +16,7 @@ import org.springframework.kafka.core.KafkaOperations;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.listener.DeadLetterPublishingRecoverer;
 import org.springframework.kafka.listener.RecoveringBatchErrorHandler;
+import org.springframework.kafka.listener.RetryingBatchErrorHandler;
 import org.springframework.kafka.listener.SeekToCurrentBatchErrorHandler;
 import org.springframework.kafka.listener.SeekToCurrentErrorHandler;
 import org.springframework.kafka.support.converter.ByteArrayJsonMessageConverter;
@@ -98,5 +99,12 @@ public class KafkaConsumerConfigs {
         DeadLetterPublishingRecoverer recoverer = new DeadLetterPublishingRecoverer((KafkaOperations<String, byte[]>) kafkaByteTemplate,
                 (r,e) -> new TopicPartition("topic.two.dlt", -1));
         return new RecoveringBatchErrorHandler(recoverer, new FixedBackOff(0L, 1L));
+    }
+
+    @Bean
+    public RetryingBatchErrorHandler rbeh() {
+        DeadLetterPublishingRecoverer recoverer = new DeadLetterPublishingRecoverer((KafkaOperations<String, byte[]>) kafkaByteTemplate,
+                (r,e) -> new TopicPartition("topic.two.dlt", -1));
+        return new RetryingBatchErrorHandler(new FixedBackOff(0L, 0L), recoverer);
     }
 }

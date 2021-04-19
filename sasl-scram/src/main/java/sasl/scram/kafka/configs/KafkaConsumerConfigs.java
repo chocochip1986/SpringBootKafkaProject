@@ -24,6 +24,12 @@ public class KafkaConsumerConfigs {
     @Value(value = "${spring.kafka.bootstrap-servers}")
     private String bootstrapAddress;
 
+    @Value(value = "${spring.kafka.username:#{null}}")
+    private String kafkaUsername;
+
+    @Value(value = "${spring.kafka.password:#{null}}")
+    private String kafkaPassword;
+
     @Autowired
     private ObjectMapper objectMapper;
 
@@ -36,6 +42,7 @@ public class KafkaConsumerConfigs {
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         props.put(SaslConfigs.SASL_MECHANISM, "SCRAM-SHA-512");
         props.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SASL_PLAINTEXT");
+        props.put(SaslConfigs.SASL_JAAS_CONFIG, "org.apache.kafka.common.security.scram.ScramLoginModule required username=\""+kafkaUsername+"\" password=\""+kafkaPassword+"\";");
         return new DefaultKafkaConsumerFactory<>(props);
     }
 
@@ -48,6 +55,7 @@ public class KafkaConsumerConfigs {
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, ByteArrayDeserializer.class);
         props.put(SaslConfigs.SASL_MECHANISM, "SCRAM-SHA-512");
         props.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SASL_PLAINTEXT");
+        props.put(SaslConfigs.SASL_JAAS_CONFIG, "org.apache.kafka.common.security.scram.ScramLoginModule required username=\""+kafkaUsername+"\" password=\""+kafkaPassword+"\";");
         return new DefaultKafkaConsumerFactory<>(props);
     }
 

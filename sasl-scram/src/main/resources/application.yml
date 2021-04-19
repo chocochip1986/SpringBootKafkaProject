@@ -23,3 +23,5 @@ spring:
       enabled: false
   kafka:
     bootstrap-servers: localhost:9092
+    username: alice
+    password: alice-secret

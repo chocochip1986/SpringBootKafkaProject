@@ -20,6 +20,12 @@ public class KafkaProducerConfigs {
     @Value(value = "${spring.kafka.bootstrap-servers}")
     private String bootstrapAddress;
 
+    @Value(value = "${spring.kafka.username:#{null}}")
+    private String kafkaUsername;
+
+    @Value(value = "${spring.kafka.password:#{null}}")
+    private String kafkaPassword;
+
     @Bean
     public KafkaTemplate<String, String> kafkaTemplate() {
         return new KafkaTemplate<>(producerFactory());
@@ -38,6 +44,7 @@ public class KafkaProducerConfigs {
         configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         configProps.put(SaslConfigs.SASL_MECHANISM, "SCRAM-SHA-512");
         configProps.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SASL_PLAINTEXT");
+        configProps.put(SaslConfigs.SASL_JAAS_CONFIG, "org.apache.kafka.common.security.scram.ScramLoginModule required username=\""+kafkaUsername+"\" password=\""+kafkaPassword+"\";");
         return new DefaultKafkaProducerFactory<String, String>(configProps);
     }
 
@@ -49,6 +56,7 @@ public class KafkaProducerConfigs {
         configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class);
         configProps.put(SaslConfigs.SASL_MECHANISM, "SCRAM-SHA-512");
         configProps.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SASL_PLAINTEXT");
+        configProps.put(SaslConfigs.SASL_JAAS_CONFIG, "org.apache.kafka.common.security.scram.ScramLoginModule required username=\""+kafkaUsername+"\" password=\""+kafkaPassword+"\";");
         return new DefaultKafkaProducerFactory<>(configProps);
     }
 }

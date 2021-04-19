@@ -97,6 +97,6 @@ public class KafkaConsumerConfigs {
     public RecoveringBatchErrorHandler ebh() {
         DeadLetterPublishingRecoverer recoverer = new DeadLetterPublishingRecoverer((KafkaOperations<String, byte[]>) kafkaByteTemplate,
                 (r,e) -> new TopicPartition("topic.two.dlt", -1));
-        return new RecoveringBatchErrorHandler(recoverer, new FixedBackOff(0L, 0L));
+        return new RecoveringBatchErrorHandler(recoverer, new FixedBackOff(0L, 1L));
     }
 }

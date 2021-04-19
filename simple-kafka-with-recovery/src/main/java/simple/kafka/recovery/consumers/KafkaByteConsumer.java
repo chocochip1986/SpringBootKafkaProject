@@ -12,6 +12,7 @@ import java.util.List;
 public class KafkaByteConsumer {
     @KafkaListener(topics = "topic.two", containerFactory = "kafkaByteListenerContainerFactory")
     public void consume(List<ConsumerRecord<String, byte[]>> records) {
+        System.out.println("Batch Size: "+records.size());
         for(ConsumerRecord<String, byte[]> record: records) {
             String str = new String(record.value(), StandardCharsets.UTF_8);
             if ( str.equals("5") ) {

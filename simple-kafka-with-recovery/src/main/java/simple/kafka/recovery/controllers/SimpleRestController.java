@@ -22,7 +22,9 @@ public class SimpleRestController {
     @GetMapping(value = "/v1/api/topic/{id}")
     public ResponseEntity<String> trigger(@PathVariable("id") String id) {
         if(id.equalsIgnoreCase("1")) {
-            producer.sendMessage("topic.one", "HAHAHAHAHHAHAHAH");
+            for( int i = 0 ; i < 10 ; i++ ) {
+                producer.sendMessage("topic.one", String.valueOf(i));
+            }
         } else if (id.equalsIgnoreCase("2")) {
             byteProducer.sendMessage("topic.two", "In Bytes YO");
         } else if (id.equalsIgnoreCase("3")) {
@@ -33,6 +35,24 @@ public class SimpleRestController {
             }
         }
 
+        return new ResponseEntity<>("SWEE LA", HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/v1/api/topic/{id}")
+    public ResponseEntity<String> triggerForLoop(@PathVariable("id") String id) {
+        for( int i = 0 ; i < 10 ; i++ ) {
+            if(id.equalsIgnoreCase("1")) {
+                producer.sendMessage("topic.one", String.valueOf(i));
+            } else if (id.equalsIgnoreCase("2")) {
+                byteProducer.sendMessage("topic.two", String.valueOf(i));
+            } else if (id.equalsIgnoreCase("3")) {
+                try {
+                    byteProducer.sendMessage("topic.three", Person.builder().name("NAME "+String.valueOf(i)).build());
+                } catch (JsonProcessingException e) {
+                    return new ResponseEntity<>("NO SWEE LEH", HttpStatus.BAD_REQUEST);
+                }
+            }
+        }
         return new ResponseEntity<>("SWEE LA", HttpStatus.OK);
     }
 }

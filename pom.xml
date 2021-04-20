@@ -28,6 +28,7 @@
         <module>sasl-scram</module>
         <module>sasl-scram-ssl-setup</module>
         <module>simple-kafka-with-recovery</module>
+        <module>simple-kafka-with-manual-ack</module>
     </modules>
 
     <properties>

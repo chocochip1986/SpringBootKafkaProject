@@ -1,5 +1,6 @@
 package multi.thread.consumption.consumers;
 
+import multi.thread.consumption.functions.SimpleErrorSupplierCreator;
 import multi.thread.consumption.functions.SimpleSupplierCreator;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -24,17 +25,27 @@ public class KafkaConsumer {
         executorService.submit(() -> {
             ExecutorService slaveThreadService = Executors.newFixedThreadPool(6);
             List<CompletableFuture<String>> listOfFutures = new ArrayList<>();
-            for( int i = 0 ; i < 5 ; i++ ) {
-                listOfFutures.add(CompletableFuture.supplyAsync(SimpleSupplierCreator.createTask(Thread.currentThread().getId()), slaveThreadService));
+            for( int i = 0 ; i < 1 ; i++ ) {
+                listOfFutures.add(
+                        CompletableFuture.supplyAsync(
+                                SimpleErrorSupplierCreator.createTask(
+                                        Thread.currentThread().getId()), slaveThreadService)
+                                .handle((msg, t) -> t != null ? t.getMessage() : msg));
             }
             CompletableFuture<Void> futures = CompletableFuture.allOf(listOfFutures.toArray(CompletableFuture[]::new));
             try {
                 futures.get();
             } catch (InterruptedException | ExecutionException e) {
-                System.out.println("["+Thread.currentThread().getId()+"] Worker thread interrupted...");
+                System.out.println("["+Thread.currentThread().getId()+"] Worker thread interrupted..."+e.getMessage());
                 Thread.currentThread().interrupt();
             }
-            boolean allPass = listOfFutures.stream().allMatch(CompletableFuture::isDone);
+            boolean allPass = listOfFutures.stream().allMatch(f -> {
+                try {
+                    return f.get().equals("EXITED SUCCESSFULLY");
+                } catch (ExecutionException | InterruptedException e) {
+                    return false;
+                }
+            });
             if (allPass) {
                 slaveThreadService.shutdown();
                 acknowledgment.acknowledge();

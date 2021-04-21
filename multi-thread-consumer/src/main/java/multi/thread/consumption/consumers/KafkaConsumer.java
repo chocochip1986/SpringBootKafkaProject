@@ -37,12 +37,12 @@ public class KafkaConsumer {
             boolean allPass = listOfFutures.stream().allMatch(CompletableFuture::isDone);
             if (allPass) {
                 slaveThreadService.shutdown();
+                acknowledgment.acknowledge();
                 System.out.println("["+Thread.currentThread().getId()+"] All slave threads exited successfully...");
             } else {
                 System.out.println("["+Thread.currentThread().getId()+"] All slave threads exited cui...");
             }
             System.out.println("["+Thread.currentThread().getId()+"] Worker thread ended...");
-            acknowledgment.acknowledge();
         });
     }
 }

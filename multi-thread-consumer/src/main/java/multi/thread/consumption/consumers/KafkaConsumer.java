@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -30,14 +31,27 @@ public class KafkaConsumer {
                         CompletableFuture.supplyAsync(
                                 SimpleErrorSupplierCreator.createTask(
                                         Thread.currentThread().getId()), slaveThreadService)
-                                .handle((msg, t) -> t != null ? t.getMessage() : msg));
+//                                .handle((msg, t) -> t != null ? t.getMessage() : msg)
+                );
             }
             CompletableFuture<Void> futures = CompletableFuture.allOf(listOfFutures.toArray(CompletableFuture[]::new));
             try {
                 futures.get();
             } catch (InterruptedException | ExecutionException e) {
                 System.out.println("["+Thread.currentThread().getId()+"] Worker thread interrupted..."+e.getMessage());
-                Thread.currentThread().interrupt();
+                System.out.println(listOfFutures.stream().map(f -> {
+                    try {
+                        if ( !f.get().equals("OK") ) {
+                            return f.get();
+                        }
+                    } catch (InterruptedException interruptedException) {
+                        interruptedException.printStackTrace();
+                    } catch (ExecutionException executionException) {
+                        executionException.printStackTrace();
+                    }
+                    return null;
+                }).filter(Objects::nonNull).reduce("", (partialStr, str) -> partialStr+System.lineSeparator()+str));
+                return;
             }
             boolean allPass = listOfFutures.stream().allMatch(f -> {
                 try {

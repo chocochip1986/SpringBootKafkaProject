@@ -9,7 +9,7 @@ public class SimpleErrorSupplierCreator {
             try {
                 System.out.println("["+Thread.currentThread().getId()+"] Slave thread running...");
                 Thread.sleep(5000L);
-                throw new RuntimeException("["+Thread.currentThread().getId()+"Error encounted!");
+                throw new RuntimeException("["+Thread.currentThread().getId()+"] Error encounted!");
             } catch (InterruptedException e) {
                 System.out.println("["+Thread.currentThread().getId()+"] Slave thread interrupted...");
             }

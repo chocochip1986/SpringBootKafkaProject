@@ -15,6 +15,7 @@ import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.KafkaOperations;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.listener.DeadLetterPublishingRecoverer;
+import org.springframework.kafka.listener.KafkaListenerErrorHandler;
 import org.springframework.kafka.listener.RecoveringBatchErrorHandler;
 import org.springframework.kafka.listener.RetryingBatchErrorHandler;
 import org.springframework.kafka.listener.SeekToCurrentBatchErrorHandler;

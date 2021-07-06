@@ -1,0 +1,15 @@
+package simple.kafka.transaction;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class SimpleKafkaTransactionApplication {
+    public static void main(String[] args) {
+        try {
+            SpringApplication.run(SimpleKafkaTransactionApplication.class, args);
+        } catch (Exception ee) {
+            ee.printStackTrace();
+        }
+    }
+}

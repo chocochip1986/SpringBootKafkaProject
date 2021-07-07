@@ -24,7 +24,9 @@ public class SimpleRestController {
         if(id.equalsIgnoreCase("1")) {
             producer.sendMessage("topic.one", "HAHAHAHAHHAHAHAH");
         } else if (id.equalsIgnoreCase("2")) {
-            byteProducer.sendMessage("topic.two", "In Bytes YO");
+            for ( int i = 0 ; i < 10 ; i++ ) {
+                byteProducer.sendMessage("topic.two", "This is message no. "+i);
+            }
         } else if (id.equalsIgnoreCase("3")) {
             try {
                 byteProducer.sendMessage("topic.three", Person.builder().name("NAME HAHHAHA").build());

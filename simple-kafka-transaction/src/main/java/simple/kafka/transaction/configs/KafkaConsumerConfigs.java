@@ -74,11 +74,15 @@ public class KafkaConsumerConfigs {
         return new ChainedKafkaTransactionManager<>(jpaTransactionManager, kafkaTransactionManager);
     }
 
+    /*
+    When transactions are being used, no error handlers are configured, by default, so that the exception will roll back the transaction.
+    Error handling for transactional containers are handled by the AfterRollbackProcessor.
+    If you provide a custom error handler when using transactions, it must throw an exception if you want the transaction rolled back.
+     */
     @Bean
     public ConcurrentKafkaListenerContainerFactory<String, byte[]> kafkaByteListenerContainerFactory(ProducerFactory<String, byte[]> producerByteFactory) {
         ConcurrentKafkaListenerContainerFactory<String, byte[]> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerByteFactory());
-        factory.setErrorHandler(eh());
         factory.setConcurrency(1);
 
         factory.getContainerProperties().setTransactionManager(kafkaTransactionManager(producerByteFactory));
@@ -102,11 +106,5 @@ public class KafkaConsumerConfigs {
         factory.setConsumerFactory(consumerFactory());
         factory.setConcurrency(1);
         return factory;
-    }
-
-    @Bean
-    public SeekToCurrentErrorHandler eh() {
-        SeekToCurrentErrorHandler eh = new SeekToCurrentErrorHandler(new FixedBackOff(1L, 0L));
-        return eh;
     }
 }

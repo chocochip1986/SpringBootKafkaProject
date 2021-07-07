@@ -38,6 +38,7 @@
         <module>multi-thread-consumer</module>
         <module>simple-kafka-transaction</module>
         <module>simple-kafka-with-backoff</module>
+        <module>simple-kafka-retry</module>
     </modules>
 
     <properties>

@@ -39,6 +39,7 @@
         <module>simple-kafka-transaction</module>
         <module>simple-kafka-with-backoff</module>
         <module>simple-kafka-retry</module>
+        <module>simple-kafka-committing-offsets</module>
     </modules>
 
     <properties>

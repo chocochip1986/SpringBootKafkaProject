@@ -37,6 +37,7 @@
         <module>simple-kafka-with-manual-ack</module>
         <module>multi-thread-consumer</module>
         <module>simple-kafka-transaction</module>
+        <module>simple-kafka-with-backoff</module>
     </modules>
 
     <properties>

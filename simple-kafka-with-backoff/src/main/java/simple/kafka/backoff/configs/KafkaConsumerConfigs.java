@@ -1,4 +1,4 @@
-package simple.kafka.transaction.configs;
+package simple.kafka.backoff.configs;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -8,19 +8,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
-import org.springframework.kafka.core.ProducerFactory;
-import org.springframework.kafka.listener.ContainerProperties;
+import org.springframework.kafka.listener.RetryingBatchErrorHandler;
+import org.springframework.kafka.listener.SeekToCurrentBatchErrorHandler;
 import org.springframework.kafka.listener.SeekToCurrentErrorHandler;
 import org.springframework.kafka.support.converter.ByteArrayJsonMessageConverter;
-import org.springframework.kafka.transaction.ChainedKafkaTransactionManager;
-import org.springframework.kafka.transaction.KafkaTransactionManager;
-import org.springframework.orm.jpa.JpaTransactionManager;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.support.AbstractPlatformTransactionManager;
+import org.springframework.retry.backoff.FixedBackOffPolicy;
+import org.springframework.retry.support.RetryTemplate;
 import org.springframework.util.backoff.FixedBackOff;
 
 import java.util.HashMap;
@@ -51,39 +47,25 @@ public class KafkaConsumerConfigs {
         props.put(ConsumerConfig.GROUP_ID_CONFIG, "group.two");
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, ByteArrayDeserializer.class);
-        props.put(ConsumerConfig.ISOLATION_LEVEL_CONFIG, "read_committed");
-        props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
         return new DefaultKafkaConsumerFactory<>(props);
     }
 
     @Bean
-    public KafkaTransactionManager<String, byte[]> kafkaTransactionManager(ProducerFactory<String, byte[]> producerByteFactory) {
-        KafkaTransactionManager<String, byte[]> kafkaTransactionManager = new KafkaTransactionManager<>(producerByteFactory);
-        kafkaTransactionManager.setTransactionSynchronization(AbstractPlatformTransactionManager.SYNCHRONIZATION_ON_ACTUAL_TRANSACTION);
-        return kafkaTransactionManager;
-    }
-
-    @Bean
-    @Primary
-    public PlatformTransactionManager transactionManager() {
-        return new JpaTransactionManager();
-    }
-
-    @Bean
-    public ChainedKafkaTransactionManager<String, byte[]> chainedKafkaTransactionManager(JpaTransactionManager jpaTransactionManager, KafkaTransactionManager<String, byte[]> kafkaTransactionManager) {
-        return new ChainedKafkaTransactionManager<>(jpaTransactionManager, kafkaTransactionManager);
-    }
-
-    @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, byte[]> kafkaByteListenerContainerFactory(ProducerFactory<String, byte[]> producerByteFactory) {
+    public ConcurrentKafkaListenerContainerFactory<String, byte[]> kafkaByteListenerContainerFactory() {
         ConcurrentKafkaListenerContainerFactory<String, byte[]> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerByteFactory());
-        factory.setErrorHandler(eh());
         factory.setConcurrency(1);
+        factory.setErrorHandler(eh());
+        return factory;
+    }
 
-        factory.getContainerProperties().setTransactionManager(kafkaTransactionManager(producerByteFactory));
-        factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.RECORD);
-        factory.getContainerProperties().setSyncCommits(true);
+    @Bean
+    public ConcurrentKafkaListenerContainerFactory<String, byte[]> kafkaBatchByteListenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, byte[]> factory = new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(consumerByteFactory());
+        factory.setConcurrency(1);
+        factory.setBatchListener(true);
+        factory.setBatchErrorHandler(beh());
         return factory;
     }
 
@@ -93,6 +75,7 @@ public class KafkaConsumerConfigs {
         factory.setConsumerFactory(consumerByteFactory());
         factory.setConcurrency(1);
         factory.setMessageConverter(new ByteArrayJsonMessageConverter(objectMapper));
+        factory.setErrorHandler(eh());
         return factory;
     }
 
@@ -101,12 +84,28 @@ public class KafkaConsumerConfigs {
         ConcurrentKafkaListenerContainerFactory<String, String> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory());
         factory.setConcurrency(1);
+        factory.setErrorHandler(eh());
         return factory;
     }
 
     @Bean
     public SeekToCurrentErrorHandler eh() {
-        SeekToCurrentErrorHandler eh = new SeekToCurrentErrorHandler(new FixedBackOff(1L, 0L));
-        return eh;
+        return new SeekToCurrentErrorHandler((record, e) -> {
+            //After the BackOff is exhausted, this BiConsumer will be executed so you can do your recovery here or you can do other stuff.
+            System.out.println("Record died");
+        }, new FixedBackOff(0L, 1L));
+    }
+
+    /*
+    The SeekToCurrentBatchErrorHandler has no mechanism to recover after a certain number of failures.
+    One reason for this is there is no guarantee that, when a batch is redelivered,
+    the batch has the same number of records and/or the redelivered records are in the same order.
+    It is impossible, therefore, to maintain retry state for a batch. If you use this, expect to get infinite retries
+     */
+    @Bean
+    public SeekToCurrentBatchErrorHandler beh() {
+        SeekToCurrentBatchErrorHandler beh = new SeekToCurrentBatchErrorHandler();
+        beh.setBackOff(new FixedBackOff(0L, 1L));
+        return beh;
     }
 }

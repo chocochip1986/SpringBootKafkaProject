@@ -16,9 +16,9 @@ public class SimpleService {
         System.out.println("Message consumed: "+str);
         animalJpaRepo.save(AnimalEntity.builder().name(str).build());
         kafkaByteProducer.sendMessage("topic.four", str+" hello");
+        throw new RuntimeException("WAH LAN EH");
     }
 
-    @Transactional("chainedKafkaTransactionManager")
     public void consume(String str) {
         System.out.println("Message consumed: "+str);
         throw new RuntimeException("WAH LAN EH");

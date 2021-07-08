@@ -96,12 +96,16 @@ public class KafkaConsumerConfigs {
         return factory;
     }
 
+    /*
+    SeekToCurrentErrorHandler will execute recovery process once the BackOff policy is completed.
+    Once the error handler is done executing, the offending record's offset is committed and the rest of the records from the poll will be delivered on the next poll.
+     */
     @Bean
     public SeekToCurrentErrorHandler eh() {
         return new SeekToCurrentErrorHandler((record, e) -> {
             //After the BackOff is exhausted, this BiConsumer will be executed so you can do your recovery here or you can do other stuff.
             System.out.println("Record died");
-        }, new FixedBackOff(0L, 1L));
+        }, new FixedBackOff(0L, 0L));
     }
 
     /*

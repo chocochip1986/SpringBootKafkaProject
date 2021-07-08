@@ -12,8 +12,12 @@ import java.util.List;
 public class KafkaByteConsumer {
     @KafkaListener(topics = "topic.two", containerFactory = "kafkaByteListenerContainerFactory")
     public void consume(ConsumerRecord<String, byte[]> record) {
-        System.out.println("Message consumed: "+convert(record.value()));
-        throw new RuntimeException("CANNOT LA");
+        String str = convert(record.value());
+//        if ( str.matches("^.*no\\. 5$") ) {
+//            throw new RuntimeException("CANNOT LA");
+//        } else {
+            System.out.println("Message consumed: "+convert(record.value()));
+//        }
     }
 
     @KafkaListener(topics = "topic.four", containerFactory = "kafkaBatchByteListenerContainerFactory")

@@ -21,27 +21,39 @@ public class SimpleRestController {
 
     @GetMapping(value = "/v1/api/topic/{id}")
     public ResponseEntity<String> trigger(@PathVariable("id") String id) {
-        if(id.equalsIgnoreCase("1")) {
-            producer.sendMessage("topic.one", "HAHAHAHAHHAHAHAH");
-        } else if (id.equalsIgnoreCase("2")) {
-            for ( int i = 0 ; i < 10 ; i++ ) {
-                byteProducer.sendMessage("topic.two", "This is message no. "+i);
-            }
-        } else if (id.equalsIgnoreCase("3")) {
-            try {
-                byteProducer.sendMessage("topic.three", Person.builder().name("NAME HAHHAHA").build());
-            } catch (JsonProcessingException e) {
-                return new ResponseEntity<>("NO SWEE LEH", HttpStatus.BAD_REQUEST);
-            }
-        } else if (id.equalsIgnoreCase("4")) {
-            for ( int i = 0 ; i < 10 ; i++ ) {
-                byteProducer.sendMessage("topic.four", "This is message no. "+i);
-            }
-        } else if (id.equalsIgnoreCase("5")) {
-            for ( int i = 0 ; i < 10 ; i++ ) {
-                byteProducer.sendMessage("topic.five", "This is message no. "+i);
-            }
+        switch (id) {
+            case "1":
+                sendMultiple("topic.one");
+                break;
+            case "2":
+                sendMultiple("topic.two");
+                break;
+            case "3":
+                sendMultiple("topic.three");
+                break;
+            case "4":
+                sendMultiple("topic.four");
+                break;
+            case "5":
+                sendMultiple("topic.five");
+                break;
+            case "6":
+                sendMultiple("topic.six");
+                break;
+            case "7":
+                sendMultiple("topic.seven");
+                break;
+            case "8":
+                sendMultiple("topic.eight");
+                break;
+            default:
         }
-        return new ResponseEntity<>("SWEE LA", HttpStatus.OK);
+        return new ResponseEntity<>("OK", HttpStatus.OK);
+    }
+
+    private void sendMultiple(String topic) {
+        for ( int i = 0 ; i < 10 ; i++ ) {
+            byteProducer.sendMessage(topic, "This is message no. "+i);
+        }
     }
 }

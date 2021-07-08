@@ -12,7 +12,6 @@ public class Topics {
     public NewTopic topic1() {
         return TopicBuilder
                 .name("topic.one")
-                .partitions(1)
                 .build();
     }
 
@@ -20,7 +19,6 @@ public class Topics {
     public NewTopic topic2() {
         return TopicBuilder
                 .name("topic.two")
-                .partitions(1)
                 .build();
     }
 
@@ -28,7 +26,6 @@ public class Topics {
     public NewTopic topic3() {
         return TopicBuilder
                 .name("topic.three")
-                .partitions(1)
                 .build();
     }
 
@@ -43,6 +40,27 @@ public class Topics {
     public NewTopic topic5() {
         return TopicBuilder
                 .name("topic.five")
+                .build();
+    }
+
+    @Bean
+    public NewTopic topic6() {
+        return TopicBuilder
+                .name("topic.six")
+                .build();
+    }
+
+    @Bean
+    public NewTopic topic7() {
+        return TopicBuilder
+                .name("topic.seven")
+                .build();
+    }
+
+    @Bean
+    public NewTopic topic8() {
+        return TopicBuilder
+                .name("topic.eight")
                 .build();
     }
 }

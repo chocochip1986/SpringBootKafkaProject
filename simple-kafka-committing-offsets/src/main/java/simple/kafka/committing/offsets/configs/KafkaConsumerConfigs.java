@@ -59,7 +59,7 @@ public class KafkaConsumerConfigs {
     MANUAL_IMMEDIATE: Commit the offset immediately when the Acknowledgment.acknowledge() method is called by the listener.
      */
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, byte[]> kafkaByteListenerContainerFactory() {
+    public ConcurrentKafkaListenerContainerFactory<String, byte[]> kafkaRecordAckByteListenerContainerFactory() {
         ConcurrentKafkaListenerContainerFactory<String, byte[]> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerByteFactory());
         factory.setConcurrency(1);
@@ -69,12 +69,55 @@ public class KafkaConsumerConfigs {
     }
 
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, byte[]> kafkaBatchByteListenerContainerFactory() {
+    public ConcurrentKafkaListenerContainerFactory<String, byte[]> kafkaBatchAckByteListenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, byte[]> factory = new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(consumerByteFactory());
+        factory.setConcurrency(1);
+        factory.setErrorHandler(eh());
+        factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.BATCH);
+        return factory;
+    }
+
+    @Bean
+    public ConcurrentKafkaListenerContainerFactory<String, byte[]> kafkaManualAckByteListenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, byte[]> factory = new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(consumerByteFactory());
+        factory.setConcurrency(1);
+        factory.setErrorHandler(eh());
+        factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL);
+        return factory;
+    }
+
+    @Bean
+    public ConcurrentKafkaListenerContainerFactory<String, byte[]> kafkaManualImmDAckByteListenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, byte[]> factory = new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(consumerByteFactory());
+        factory.setConcurrency(1);
+        factory.setErrorHandler(eh());
+        factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL_IMMEDIATE);
+        return factory;
+    }
+
+    //You cannot use AckMode.RECORD on a batch listener
+    @Bean
+    public ConcurrentKafkaListenerContainerFactory<String, byte[]> kafkaBatchBatchByteListenerContainerFactory() {
         ConcurrentKafkaListenerContainerFactory<String, byte[]> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerByteFactory());
         factory.setConcurrency(1);
         factory.setBatchListener(true);
         factory.setBatchErrorHandler(beh());
+        factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.BATCH);
+        return factory;
+    }
+
+    @Bean
+    public ConcurrentKafkaListenerContainerFactory<String, byte[]> kafkaManualAckBatchByteListenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, byte[]> factory = new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(consumerByteFactory());
+        factory.setConcurrency(1);
+        factory.setBatchListener(true);
+        factory.setBatchErrorHandler(beh());
+        factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL);
         return factory;
     }
 

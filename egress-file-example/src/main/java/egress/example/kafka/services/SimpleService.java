@@ -19,6 +19,8 @@ import javax.persistence.PessimisticLockException;
 import java.io.File;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,7 +32,7 @@ public class SimpleService {
     private String absoluteSubDir = System.getProperty("user.dir") + File.separator + "egress";
     private String absoluteFilePath = absoluteSubDir + File.separator + "egress.txt";
 
-    private final int PAGE_SIZE = 1000;
+    private final int PAGE_SIZE = 3;
     public void init() {
         File dir = new File(absoluteSubDir);
         if (!dir.exists()) {
@@ -47,24 +49,42 @@ public class SimpleService {
             dir.delete();
         }
 
-        egress.example.kafka.entities.File fileEntity = egress.example.kafka.entities.File.builder().absFilePath(absoluteFilePath).currentCount(0).status(FileStatus.NEW).build();
+        int cohortSize = animalJpaRepo.countAll();
+        egress.example.kafka.entities.File fileEntity = egress.example.kafka.entities.File.builder()
+                .uuid(UUID.randomUUID().toString())
+                .absFilePath(absoluteFilePath)
+                .currentCount(0)
+                .totalCount(cohortSize)
+                .status(FileStatus.NEW)
+                .build();
+        fileEntity = fileJpaRepo.save(fileEntity);
         send("topic.one", DtoOne.builder().file(fileEntity).build());
     }
 
     public void consumeDtoOne(DtoOne dto) {
-        int cohortSize = animalJpaRepo.countAll();
-        int noOfPages = calculateNoOfPages(cohortSize);
+        egress.example.kafka.entities.File fileEntity = fileJpaRepo.findById(dto.getFile().getId()).orElse(null);
+        if (Objects.nonNull(fileEntity) && fileEntity.getStatus().equals(FileStatus.NEW)) {
+            System.out.println("Processing DtoOne...");
 
-        egress.example.kafka.entities.File fileEntity = dto.getFile();
-        fileEntity.setTotalCount(cohortSize);
-        fileEntity.setStatus(FileStatus.PROCESSING);
-        fileJpaRepo.save(fileEntity);
-        for ( int i = 0 ; i < noOfPages ; i++ ) {
-            send("topic.two", DtoTwo.builder().file(fileEntity).index(i).size(PAGE_SIZE).build());
+            int noOfPages = calculateNoOfPages(fileEntity.getTotalCount());
+
+            fileEntity = dto.getFile();
+            fileEntity.setStatus(FileStatus.CONSUMED_DTO_ONE);
+            for ( int i = 0 ; i < noOfPages ; i++ ) {
+                send("topic.two", DtoTwo.builder().file(fileEntity).index(i).size(PAGE_SIZE).build());
+            }
+            fileJpaRepo.save(fileEntity);
+        } else {
+            if (Objects.isNull(fileEntity)) {
+                System.out.println("File Entity of id "+dto.getFile().getId()+" is null!");
+            } else {
+                System.out.println("File Entity of id "+fileEntity.getId()+" of status "+fileEntity.getStatus().toString()+" has already been processed. Skipping...");
+            }
         }
     }
 
     public void consumeDtoTwo(DtoTwo dto) {
+        System.out.println("Processing DtoTwo...");
         List<Animal> animals = animalJpaRepo.findByIdWithPageable(PageRequest.of(dto.getIndex(), dto.getSize())).orElse(null);
 
         if (Objects.isNull(animals) || animals.isEmpty()) {
@@ -129,5 +149,13 @@ public class SimpleService {
 
     private int calculateNoOfPages(int cohort) {
         return cohort < 1 ? 0 : ((cohort - 1) / PAGE_SIZE) + 1;
+    }
+
+    private void waiting() {
+        try {
+            Thread.sleep(30001);
+        } catch (InterruptedException e) {
+            throw new RuntimeException("Thread waited interrupted",e);
+        }
     }
 }

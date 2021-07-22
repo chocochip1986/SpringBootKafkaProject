@@ -24,6 +24,7 @@ public class File {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "file_seq")
     private Long id;
+    private String uuid;
 
     @Enumerated(EnumType.STRING)
     private FileStatus status;

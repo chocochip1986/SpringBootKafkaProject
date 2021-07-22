@@ -1,8 +1,10 @@
 package egress.example.kafka.enums;
 
 public enum FileStatus {
+    ERROR,
     NEW,
-    PROCESSING,
-    COMPLETED,
-    ERROR;
+    CONSUMED_DTO_ONE,
+    CONSUMED_DTO_TWO,
+    CONSUMED_DTO_THREE,
+    COMPLETED;
 }

@@ -17,4 +17,6 @@ public interface FileJpaRepo extends JpaRepository<File, Long> {
     @QueryHints({@QueryHint(name = "javax.persistence.lock.timeout", value = "3000")})
     @Query("SELECT f FROM File f WHERE f.id = ?1")
     Optional<File> findByIdWithLock(Long id);
+
+    Optional<File> findByUuid(String uuid);
 }

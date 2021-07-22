@@ -35,6 +35,7 @@ public class KafkaConsumerConfigs {
         props.put(ConsumerConfig.GROUP_ID_CONFIG, "group.two");
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, ByteArrayDeserializer.class);
+        props.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, 30000); //30 seconds
         return new DefaultKafkaConsumerFactory<>(props);
     }
 
@@ -44,6 +45,7 @@ public class KafkaConsumerConfigs {
         factory.setConsumerFactory(consumerByteFactory());
         factory.setConcurrency(1);
         factory.setErrorHandler(eh());
+        factory.getContainerProperties().setConsumerRebalanceListener(new CustomRebalanceListener());
         return factory;
     }
 
@@ -85,7 +87,7 @@ public class KafkaConsumerConfigs {
     public SeekToCurrentErrorHandler eh() {
         return new SeekToCurrentErrorHandler((record, e) -> {
             //After the BackOff is exhausted, this BiConsumer will be executed so you can do your recovery here or you can do other stuff.
-            System.out.println("Record died");
+            System.out.println("A Kafka record from topic ["+record.topic()+"], partition ["+record.partition()+"], offset ["+record.offset()+"] has encountered an exception "+e.getMessage()+". It has been recovered. No further action taken!");
         }, new FixedBackOff(0L, 0L));
     }
 

@@ -40,6 +40,7 @@
         <module>simple-kafka-with-backoff</module>
         <module>simple-kafka-retry</module>
         <module>simple-kafka-committing-offsets</module>
+        <module>egress-file-example</module>
     </modules>
 
     <properties>

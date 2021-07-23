@@ -37,6 +37,9 @@ public class KafkaProducerConfigs {
         return new DefaultKafkaProducerFactory<String, String>(configProps);
     }
 
+    /*
+    Idempotent Producers (i.e. "enable.idempotence" = true) only guarantees Exactly once semantics at a per partition level and within the lifetime of the producer.
+     */
     @Bean
     public ProducerFactory<String, byte[]> producerByteFactory() {
         Map<String, Object> configProps = new HashMap<String, Object>();

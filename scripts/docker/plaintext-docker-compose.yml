@@ -4,7 +4,7 @@ networks:
     name: myNetwork
 services:
   zookeeper:
-    image: 'docker.io/bitnami/zookeeper:3-debian-10'
+    image: 'bitnami/zookeeper:3.7.0-debian-10-r96'
     ports:
       - '2181:2181'
     networks:
@@ -13,7 +13,7 @@ services:
     environment:
       ALLOW_ANONYMOUS_LOGIN: "yes"
   kafka:
-    image: 'docker.io/bitnami/kafka:2-debian-10'
+    image: 'bitnami/kafka:2.8.0-debian-10-r55'
     ports:
       - '9092:9092'
     networks:

@@ -16,24 +16,24 @@ import java.nio.charset.StandardCharsets;
 @Service
 public class KafkaByteProducer {
     @Autowired
-    private KafkaTemplate<String, byte[]> kafkaByteTemplate;
+    private KafkaTemplate<String, byte[]> idempotentKafkaByteTemplate;
 
     @Autowired
     private ObjectMapper objectMapper;
 
     @Transactional
     public void sendMessage(String topic, String message) {
-        kafkaByteTemplate.send(topic, message.getBytes(StandardCharsets.UTF_8));
+        idempotentKafkaByteTemplate.send(topic, message.getBytes(StandardCharsets.UTF_8));
     }
 
     @Transactional
     public void sendMessage(String topic, AnimalEntity message) throws JsonProcessingException {
-        kafkaByteTemplate.send(topic, objectMapper.writeValueAsBytes(message));
+        idempotentKafkaByteTemplate.send(topic, objectMapper.writeValueAsBytes(message));
     }
 
     public void sendMessageWithReply(String topic, final String message) {
         ListenableFuture<SendResult<String, byte[]>> future =
-                kafkaByteTemplate.send(topic, message.getBytes(StandardCharsets.UTF_8));
+                idempotentKafkaByteTemplate.send(topic, message.getBytes(StandardCharsets.UTF_8));
 
         future.addCallback(new ListenableFutureCallback<SendResult<String, byte[]>>() {
             public void onFailure(Throwable throwable) {

@@ -25,6 +25,14 @@ public class Topics {
     }
 
     @Bean
+    public NewTopic topic3() {
+        return TopicBuilder
+                .name("topic.three")
+                .partitions(1)
+                .build();
+    }
+
+    @Bean
     public NewTopic topic4() {
         return TopicBuilder
                 .name("topic.four")
@@ -33,9 +41,17 @@ public class Topics {
     }
 
     @Bean
-    public NewTopic topic3() {
+    public NewTopic topic5() {
         return TopicBuilder
-                .name("topic.three")
+                .name("topic.five")
+                .partitions(1)
+                .build();
+    }
+
+    @Bean
+    public NewTopic topic6() {
+        return TopicBuilder
+                .name("topic.six")
                 .partitions(1)
                 .build();
     }

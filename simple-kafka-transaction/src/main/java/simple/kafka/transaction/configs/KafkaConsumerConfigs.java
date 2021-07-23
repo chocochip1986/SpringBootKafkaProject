@@ -51,14 +51,25 @@ public class KafkaConsumerConfigs {
         props.put(ConsumerConfig.GROUP_ID_CONFIG, "group.two");
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, ByteArrayDeserializer.class);
-        props.put(ConsumerConfig.ISOLATION_LEVEL_CONFIG, "read_committed");
-        props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
         return new DefaultKafkaConsumerFactory<>(props);
     }
 
     @Bean
-    public KafkaTransactionManager<String, byte[]> kafkaTransactionManager(ProducerFactory<String, byte[]> producerByteFactory) {
-        KafkaTransactionManager<String, byte[]> kafkaTransactionManager = new KafkaTransactionManager<>(producerByteFactory);
+    public ConsumerFactory<String, byte[]> txConsumerByteFactory() {
+        Map<String, Object> props = new HashMap<String, Object>();
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, "group.three");
+        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, ByteArrayDeserializer.class);
+        props.put(ConsumerConfig.ISOLATION_LEVEL_CONFIG, "read_committed");
+        props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
+        props.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, 30000); //30 seconds for testing rebalancing
+        return new DefaultKafkaConsumerFactory<>(props);
+    }
+
+    @Bean
+    public KafkaTransactionManager<String, byte[]> kafkaTransactionManager(ProducerFactory<String, byte[]> transactionalProducerByteFactory) {
+        KafkaTransactionManager<String, byte[]> kafkaTransactionManager = new KafkaTransactionManager<>(transactionalProducerByteFactory);
         kafkaTransactionManager.setTransactionSynchronization(AbstractPlatformTransactionManager.SYNCHRONIZATION_ON_ACTUAL_TRANSACTION);
         return kafkaTransactionManager;
     }
@@ -80,12 +91,23 @@ public class KafkaConsumerConfigs {
     If you provide a custom error handler when using transactions, it must throw an exception if you want the transaction rolled back.
      */
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, byte[]> kafkaByteListenerContainerFactory(ProducerFactory<String, byte[]> producerByteFactory) {
+    public ConcurrentKafkaListenerContainerFactory<String, byte[]> txKafkaByteListenerContainerFactory(ProducerFactory<String, byte[]> transactionalProducerByteFactory) {
+        ConcurrentKafkaListenerContainerFactory<String, byte[]> factory = new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(txConsumerByteFactory());
+        factory.setConcurrency(1);
+
+//        factory.getContainerProperties().setTransactionManager(kafkaTransactionManager(transactionalProducerByteFactory));
+        factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.RECORD);
+        factory.getContainerProperties().setSyncCommits(true);
+        return factory;
+    }
+
+    @Bean
+    public ConcurrentKafkaListenerContainerFactory<String, byte[]> kafkaByteListenerContainerFactory() {
         ConcurrentKafkaListenerContainerFactory<String, byte[]> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerByteFactory());
         factory.setConcurrency(1);
 
-        factory.getContainerProperties().setTransactionManager(kafkaTransactionManager(producerByteFactory));
         factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.RECORD);
         factory.getContainerProperties().setSyncCommits(true);
         return factory;

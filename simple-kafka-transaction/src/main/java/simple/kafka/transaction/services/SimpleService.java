@@ -31,6 +31,7 @@ public class SimpleService {
     public void consumeFromTopicFive(DtoOne dto) {
         System.out.println("Consuming DtoOne");
         this.txKafkaByteProducer.sendTxMessage("topic.six", DtoTwo.builder().uuid(dto.getUuid()).build());
+        throw new RuntimeException("HA!");
     }
 
     public void consumeFromTopicSix(DtoTwo dto) {

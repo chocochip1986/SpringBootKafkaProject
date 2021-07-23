@@ -55,6 +55,13 @@ public class KafkaProducerConfigs {
         return new DefaultKafkaProducerFactory<>(configProps);
     }
 
+    /*
+    The TransactionalId to use for transactional delivery.
+    This enables reliability semantics which span multiple producer sessions since it allows the client to guarantee that transactions using the same
+    TransactionalId have been completed prior to starting any new transactions. If no TransactionalId is provided,
+    then the producer is limited to idempotent delivery. If a TransactionalId is configured, enable.idempotence is implied. By default the
+    TransactionId is not configured, which means transactions cannot be used. Note that, by default, transactions require a cluster of at least three brokers which is the recommended setting for production; for development you can change this, by adjusting broker setting transaction.state.log.replication.factor
+     */
     @Bean
     public ProducerFactory<String, byte[]> transactionalProducerByteFactory() {
         Map<String, Object> configProps = new HashMap<String, Object>();

@@ -95,9 +95,10 @@ public class KafkaConsumerConfigs {
         ConcurrentKafkaListenerContainerFactory<String, byte[]> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(txConsumerByteFactory());
         factory.setConcurrency(1);
+        factory.setErrorHandler(eh());
 
 //        factory.getContainerProperties().setTransactionManager(kafkaTransactionManager(transactionalProducerByteFactory));
-        factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.RECORD);
+//        factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.RECORD);
         factory.getContainerProperties().setSyncCommits(true);
         return factory;
     }
@@ -128,5 +129,13 @@ public class KafkaConsumerConfigs {
         factory.setConsumerFactory(consumerFactory());
         factory.setConcurrency(1);
         return factory;
+    }
+
+    @Bean
+    public SeekToCurrentErrorHandler eh() {
+        return new SeekToCurrentErrorHandler((record, e) -> {
+            //After the BackOff is exhausted, this BiConsumer will be executed so you can do your recovery here or you can do other stuff.
+            System.out.println("Record died");
+        }, new FixedBackOff(0L, 0L));
     }
 }

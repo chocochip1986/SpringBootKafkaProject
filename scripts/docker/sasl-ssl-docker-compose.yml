@@ -1,7 +1,7 @@
 version: "2.1"
 services:
   zookeeper:
-    image: 'docker.io/bitnami/zookeeper:3.6.2-debian-10-r111'
+    image: 'bitnami/zookeeper:3.7.0-debian-10-r96'
     ports:
       - '2181:2181'
     environment:
@@ -15,7 +15,7 @@ services:
   #       We set “ALLOW_ANONYMOUS_LOGIN” configuration to true because we want to allow users to connect to ZooKeeper easily (without authentication), this configuration is not suitable for production use.
   #      ALLOW_ANONYMOUS_LOGIN: "yes"
   kafka:
-    image: 'docker.io/bitnami/kafka:2.7.0-debian-10-r16'
+    image: 'bitnami/kafka:2.8.0-debian-10-r55'
     hostname: 'kafka'
     ports:
       - '9092:9092'

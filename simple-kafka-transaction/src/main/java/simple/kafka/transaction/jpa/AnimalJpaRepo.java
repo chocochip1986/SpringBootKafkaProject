@@ -8,11 +8,11 @@ import java.util.List;
 
 @Repository
 public interface AnimalJpaRepo extends JpaRepository<AnimalEntity, Long> {
-    @Transactional
+//    @Transactional
     @Override
     <S extends AnimalEntity> List<S> saveAll(Iterable<S> iterable);
 
-    @Transactional
+//    @Transactional
     @Override
     <S extends AnimalEntity> S save(S s);
 }

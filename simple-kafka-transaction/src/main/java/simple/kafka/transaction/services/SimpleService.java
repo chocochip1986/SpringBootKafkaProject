@@ -25,23 +25,31 @@ public class SimpleService {
     @Transactional
     public void consume1(DtoOne dto) {
         System.out.println("DtoOne -> " +dto.getUuid());
-        animalJpaRepo.save(AnimalEntity.builder().name(dto.getUuid()).build());
+        animalJpaRepo.save(AnimalEntity.builder().name("DtoOne "+dto.getUuid()).build());
+        txKafkaByteProducer.sendMessage("topic.two", DtoTwo.builder().uuid(dto.getUuid()).build());
         throw new RuntimeException("HA!");
     }
 
+    @Transactional
     public void consume2(DtoTwo dto) {
+        System.out.println("DtoTwo -> " +dto.getUuid());
+        animalJpaRepo.save(AnimalEntity.builder().name("DtoTwo "+dto.getUuid()).build());
     }
 
     public void consume3(DtoThree dto) {
+        System.out.println("DtoThree -> " +dto.getUuid());
     }
 
     public void consume4(DtoFour dto) {
+        System.out.println("DtoFour -> " +dto.getUuid());
     }
 
     public void consume5(DtoFive dto) {
+        System.out.println("DtoFive -> " +dto.getUuid());
     }
 
     public void consume6(DtoSix dto) {
+        System.out.println("DtoSix -> " +dto.getUuid());
     }
 
 //    @Transactional

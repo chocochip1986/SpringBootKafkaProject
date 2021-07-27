@@ -40,7 +40,23 @@ public void consume(Dto dto) {
 When Consumer1 throws an exception after persisting a db record while processing Msg1
 Then the message is not re-consumed at all. Even if the application restarts, the message will not be re-consumed.
 Because the FixedBackOff is set to have 0 attempts, no retries are made
-And no rollback of the db record occurred because the method running the db operation is not annotated with transaction.
+And rollback of the db record occurred because the method running the db operation is annotated with `@transactional`.
+
+> Given that the Producer is a TX producer
+And Consumer1 is transactional
+And that commitRecovered is set to true with a AfterRollBackProcessor(ARP) with FixedBackOff(0L, 0L)
+And the method doing the db operation is annotated with `@Transactional` i.e.  
+`
+@Transactional
+public void consume(Dto dto) {
+// DB Operation
+throw new RuntimeException("HA!");
+}
+`
+When Consumer1 throws an exception after persisting a db record while processing Msg1
+Then the message is not re-consumed at all. Even if the application restarts, the message will not be re-consumed.
+Because the FixedBackOff is set to have 0 attempts, no retries are made
+And rollback of the db record occurred because the method running the db operation is annotated with `@transactional`.
 
 
 

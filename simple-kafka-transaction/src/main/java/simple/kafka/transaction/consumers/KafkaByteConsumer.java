@@ -21,7 +21,7 @@ import java.nio.charset.StandardCharsets;
 public class KafkaByteConsumer {
     @Autowired private SimpleService simpleService;
     @Autowired private ObjectMapper objectMapper;
-    @KafkaListener(topics = "topic.one", containerFactory = "kafkaByteListenerContainerFactory")
+    @KafkaListener(topics = "topic.one", containerFactory = "txKafkaByteListenerContainerFactory")
     public void consume1(ConsumerRecord<String, byte[]> record) {
         simpleService.consume1(convert(record.value(), DtoOne.class));
     }

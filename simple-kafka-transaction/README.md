@@ -1,3 +1,49 @@
+Scenario: Consumer1 throws exception while processing
+====================================
+```
+Producer -> Msg1 -> Consumer1
+```
+
+> Given that Producer is a TX producer
+And Consumer1 is configured with read_committed
+And that commitRecovered is set to true with a AfterRollBackProcessor(ARP) with FixedBackOff(0L, 0L)
+When Consumer1 throws an exception upon processing Msg1
+Then the message is not re-consumed at all. Even if the application restarts, the message will not be re-consumed.
+Because the FixedBackOff is set to have 0 attempts, no retries are made
+And the flag commitRecovered allows the ARP to commit the offset and transaction of the failed record to the commit and transaction log.
+Hence no re-consumption is made even if the application restarts
+
+> Given that the Producer is a TX producer
+And Consumer1 is non transactional with a SeekToCurrentErrorHandler configured with FixedBackOff(0L, 0L)
+When Consumer1 throws an exception upon processing Msg1
+Then the message is not re-consumed at all. Even if the application restarts, the message will not be re-consumed.
+Because the FixedBackOff is set to have 0 attempts, no retries are made
+And Consumer1 can read all messages regardless if it's committed or not.
+
+> Given that the Producer is a TX producer
+And Consumer1 is non transactional with a SeekToCurrentErrorHandler configured with FixedBackOff(0L, 0L)
+When Consumer1 throws an exception after persisting a db record while processing Msg1
+Then the message is not re-consumed at all. Even if the application restarts, the message will not be re-consumed.
+Because the FixedBackOff is set to have 0 attempts, no retries are made
+And no rollback of the db record occurred because the method running the db operation is not annotated with `@transactional`.
+
+> Given that the Producer is a TX producer
+And Consumer1 is non transactional with a SeekToCurrentErrorHandler configured with FixedBackOff(0L, 0L)
+And the method doing the db operation is annotated with `@Transactional` i.e.  
+`
+@Transactional
+public void consume(Dto dto) {
+    // DB Operation
+    throw new RuntimeException("HA!");
+}
+`
+When Consumer1 throws an exception after persisting a db record while processing Msg1
+Then the message is not re-consumed at all. Even if the application restarts, the message will not be re-consumed.
+Because the FixedBackOff is set to have 0 attempts, no retries are made
+And no rollback of the db record occurred because the method running the db operation is not annotated with transaction.
+
+
+
 Why Transactions?
 We designed transactions in Kafka primarily for applications that exhibit a “read-process-write” pattern where the reads and writes are from and to asynchronous data streams such as Kafka topics. Such applications are more popularly known as stream processing applications.
 
@@ -39,4 +85,3 @@ The Kafka consumer will only deliver transactional messages to the application i
 It is worth noting that the guarantees above fall short of atomic reads. In particular, when using a Kafka consumer to consume messages from a topic, an application will not know whether these messages were written as part of a transaction, and so they do not know when transactions start or end. Further, a given consumer is not guaranteed to be subscribed to all partitions which are part of a transaction, and it has no way to discover this, making it tough to guarantee that all the messages which were part of a single transaction will eventually be consumed by a single consumer.
 
 In short: Kafka guarantees that a consumer will eventually deliver only non-transactional messages or committed transactional messages. It will withhold messages from open transactions and filter out messages from aborted transactions.
-

@@ -13,6 +13,7 @@ import simple.kafka.transaction.producers.KafkaByteProducer;
 import simple.kafka.transaction.producers.KafkaProducer;
 import simple.kafka.transaction.producers.TxKafkaByteProducer;
 
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 @RestController
@@ -25,18 +26,9 @@ public class SimpleRestController {
 
     @GetMapping(value = "/v1/api/topic/{id}")
     public ResponseEntity<String> trigger(@PathVariable("id") String id) {
-        if(id.equalsIgnoreCase("1")) {
-            producer.sendMessage("topic.one", "HAHAHAHAHHAHAHAH");
-        } else if (id.equalsIgnoreCase("2")) {
-            byteProducer.sendMessage("topic.two", "In Bytes YO");
-        } else if (id.equalsIgnoreCase("3")) {
-            try {
-                byteProducer.sendMessage("topic.three", AnimalEntity.builder().name("NAME HAHHAHA").build());
-            } catch (JsonProcessingException e) {
-                return new ResponseEntity<>("NO SWEE LEH", HttpStatus.BAD_REQUEST);
-            }
-        } else if (id.equalsIgnoreCase("4")) {
-            txKafkaByteProducer.sendTxMessage("topic.five", DtoOne.builder().uuid(UUID.randomUUID().toString()).build());
+        if( id.equalsIgnoreCase("1")) {
+            //Producer initiated transaction
+            txKafkaByteProducer.sendTxMessage("topic.one", DtoOne.builder().uuid(UUID.randomUUID().toString()).build());
         }
 
         return new ResponseEntity<>("SWEE LA", HttpStatus.OK);

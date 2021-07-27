@@ -12,8 +12,10 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.kafka.listener.ContainerProperties;
+import org.springframework.kafka.listener.DefaultAfterRollbackProcessor;
 import org.springframework.kafka.listener.SeekToCurrentErrorHandler;
 import org.springframework.kafka.support.converter.ByteArrayJsonMessageConverter;
 import org.springframework.kafka.transaction.ChainedKafkaTransactionManager;
@@ -33,6 +35,9 @@ public class KafkaConsumerConfigs {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private KafkaTemplate<String, byte[]> txKafkaByteTemplate;
 
     @Bean
     public ConsumerFactory<String, String> consumerFactory() {
@@ -92,12 +97,15 @@ public class KafkaConsumerConfigs {
      */
     @Bean
     public ConcurrentKafkaListenerContainerFactory<String, byte[]> txKafkaByteListenerContainerFactory(ProducerFactory<String, byte[]> transactionalProducerByteFactory) {
+        DefaultAfterRollbackProcessor<String, byte[]> afterRollbackProcessor =
+                new DefaultAfterRollbackProcessor<>(null, new FixedBackOff(0L, 0L), txKafkaByteTemplate, true);
         ConcurrentKafkaListenerContainerFactory<String, byte[]> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(txConsumerByteFactory());
         factory.setConcurrency(1);
-        factory.setErrorHandler(eh());
+//        factory.setErrorHandler(eh()); //If you plan to use transactional consumer, then you shouldn't have an error handler so that the error will be caught and fired up the chain
 
-//        factory.getContainerProperties().setTransactionManager(kafkaTransactionManager(transactionalProducerByteFactory));
+        factory.setAfterRollbackProcessor(afterRollbackProcessor);
+        factory.getContainerProperties().setTransactionManager(kafkaTransactionManager(transactionalProducerByteFactory));
 //        factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.RECORD);
         factory.getContainerProperties().setSyncCommits(true);
         return factory;
@@ -108,8 +116,7 @@ public class KafkaConsumerConfigs {
         ConcurrentKafkaListenerContainerFactory<String, byte[]> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerByteFactory());
         factory.setConcurrency(1);
-
-        factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.RECORD);
+        factory.setErrorHandler(eh());
         factory.getContainerProperties().setSyncCommits(true);
         return factory;
     }

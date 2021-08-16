@@ -140,6 +140,12 @@
             <artifactId>spring-tx</artifactId>
             <version>5.3.8</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.hibernate/hibernate-envers -->
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-envers</artifactId>
+            <version>5.5.5.Final</version>
+        </dependency>
     </dependencies>
 
 </project>

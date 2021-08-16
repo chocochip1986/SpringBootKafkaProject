@@ -14,4 +14,6 @@ public class DtoTwo {
     private File file;
     private int index;
     private int size;
+    private Long startIndex;
+    private Long maxIndex;
 }

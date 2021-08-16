@@ -8,6 +8,7 @@ import egress.example.kafka.dtos.DtoOne;
 import egress.example.kafka.dtos.DtoTwo;
 import egress.example.kafka.entities.Animal;
 import egress.example.kafka.jpa.FileJpaRepo;
+import egress.example.kafka.pojos.AnimalAggregateResult;
 import egress.example.kafka.producers.KafkaByteProducer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -28,6 +29,7 @@ public class SimpleService {
     @Autowired private KafkaByteProducer kafkaByteProducer;
     @Autowired private AnimalJpaRepo animalJpaRepo;
     @Autowired private FileJpaRepo fileJpaRepo;
+    @Autowired private HibernateQueryService hibernateQueryService;
 
     private String absoluteSubDir = System.getProperty("user.dir") + File.separator + "egress";
     private String absoluteFilePath = absoluteSubDir + File.separator + "egress.txt";
@@ -49,16 +51,18 @@ public class SimpleService {
             dir.delete();
         }
 
-        int cohortSize = animalJpaRepo.countAll();
+        AnimalAggregateResult animalAggregateResult =
+                hibernateQueryService
+                        .selectQueryReturnPojo("SELECT new "+AnimalAggregateResult.class.getName()+"(min(A.id) AS minIndex, max(A.id) AS maxIndex, count(A.id) AS totalCount) FROM "+Animal.class.getName()+" AS A WHERE A.status = 'NEW' ORDER BY A.createdAt ASC", AnimalAggregateResult.class);
         egress.example.kafka.entities.File fileEntity = egress.example.kafka.entities.File.builder()
                 .uuid(UUID.randomUUID().toString())
                 .absFilePath(absoluteFilePath)
                 .currentCount(0)
-                .totalCount(cohortSize)
+                .totalCount(animalAggregateResult.getTotalCount().intValue())
                 .status(FileStatus.NEW)
                 .build();
         fileEntity = fileJpaRepo.save(fileEntity);
-        send("topic.one", DtoOne.builder().file(fileEntity).build());
+        send("topic.one", DtoOne.builder().file(fileEntity).result(animalAggregateResult).build());
     }
 
     public void consumeDtoOne(DtoOne dto) {

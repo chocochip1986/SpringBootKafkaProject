@@ -3,6 +3,7 @@ package egress.example.kafka.controllers;
 import egress.example.kafka.producers.KafkaByteProducer;
 import egress.example.kafka.producers.KafkaProducer;
 import egress.example.kafka.services.SimpleService;
+import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +21,8 @@ public class SimpleRestController {
     private KafkaByteProducer byteProducer;
 
     @Autowired private SimpleService simpleService;
+
+    @Autowired private SessionFactory sessionFactory;
 
     @GetMapping(value = "/v1/api/topic/{id}")
     public ResponseEntity<String> trigger(@PathVariable("id") String id) {

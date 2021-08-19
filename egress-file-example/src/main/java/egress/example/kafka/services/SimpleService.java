@@ -10,17 +10,22 @@ import egress.example.kafka.entities.Animal;
 import egress.example.kafka.jpa.FileJpaRepo;
 import egress.example.kafka.pojos.AnimalAggregateResult;
 import egress.example.kafka.producers.KafkaByteProducer;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
 import javax.persistence.LockTimeoutException;
 import javax.persistence.PessimisticLockException;
+import javax.persistence.TransactionRequiredException;
 import java.io.File;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -34,7 +39,7 @@ public class SimpleService {
     private String absoluteSubDir = System.getProperty("user.dir") + File.separator + "egress";
     private String absoluteFilePath = absoluteSubDir + File.separator + "egress.txt";
 
-    private final int PAGE_SIZE = 3;
+    private final int PAGE_SIZE = 500;
     public void init() {
         File dir = new File(absoluteSubDir);
         if (!dir.exists()) {
@@ -61,7 +66,7 @@ public class SimpleService {
                 .totalCount(animalAggregateResult.getTotalCount().intValue())
                 .status(FileStatus.NEW)
                 .build();
-        fileEntity = fileJpaRepo.save(fileEntity);
+        fileEntity = fileJpaRepo.saveAndFlush(fileEntity);
         send("topic.one", DtoOne.builder().file(fileEntity).result(animalAggregateResult).build());
     }
 
@@ -70,14 +75,29 @@ public class SimpleService {
         if (Objects.nonNull(fileEntity) && fileEntity.getStatus().equals(FileStatus.NEW)) {
             System.out.println("Processing DtoOne...");
 
-            int noOfPages = calculateNoOfPages(fileEntity.getTotalCount());
-
             fileEntity = dto.getFile();
             fileEntity.setStatus(FileStatus.CONSUMED_DTO_ONE);
-            for ( int i = 0 ; i < noOfPages ; i++ ) {
-                send("topic.two", DtoTwo.builder().file(fileEntity).index(i).size(PAGE_SIZE).build());
+            fileJpaRepo.saveAndFlush(fileEntity);
+            boolean goAhead = true;
+            Long startIndex = dto.getResult().getMinIndex();
+            Long minIndex = dto.getResult().getMinIndex();
+            Long maxIndex = dto.getResult().getMaxIndex();
+            while(goAhead) {
+                List<Animal> animals = animalJpaRepo.findByIds(startIndex, PageRequest.ofSize(PAGE_SIZE+1)).orElse(null);
+                if (Objects.isNull(animals) || animals.isEmpty()) {
+                    goAhead = false;
+                } else {
+                    if (animals.size() == PAGE_SIZE+1) {
+                        startIndex = animals.get(animals.size()-1).getId();
+                        List<Animal> subListAnimals = animals.subList(0, animals.size()-1);
+                        send("topic.three", DtoThree.builder().animals(subListAnimals).file(fileEntity).build());
+                    } else {
+                        //Means no need to iterate anymore
+                        goAhead = false;
+                        send("topic.three", DtoThree.builder().animals(animals).file(fileEntity).build());
+                    }
+                }
             }
-            fileJpaRepo.save(fileEntity);
         } else {
             if (Objects.isNull(fileEntity)) {
                 System.out.println("File Entity of id "+dto.getFile().getId()+" is null!");
@@ -89,20 +109,13 @@ public class SimpleService {
 
     public void consumeDtoTwo(DtoTwo dto) {
         System.out.println("Processing DtoTwo...");
-        List<Animal> animals = animalJpaRepo.findByIdWithPageable(PageRequest.of(dto.getIndex(), dto.getSize())).orElse(null);
-
-        if (Objects.isNull(animals) || animals.isEmpty()) {
-            System.out.println("Empty or null list of animals retrieved given pageable of ("+dto.getIndex()+", "+dto.getSize()+")");
-            throw new RuntimeException("Empty or null list of animals retrieved given pageable of ("+dto.getIndex()+", "+dto.getSize()+")");
-        } else {
-            System.out.println("Retrieved a list of "+animals.size()+" animals given pageable of ("+dto.getIndex()+", "+dto.getSize()+")");
-            send("topic.three", DtoThree.builder().animals(animals).file(dto.getFile()).build());
-        }
+        send("topic.three", DtoThree.builder().animals(dto.getAnimals()).file(dto.getFile()).build());
     }
 
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void consumeDtoThree(DtoThree dto) {
-        Long id = dto.getFile().getId();
+        System.out.println("Processing DtoThree with a startingIndex of "+dto.getAnimals().get(0).getId());
+        long id = dto.getFile().getId();
         File file = new File(dto.getFile().getAbsFilePath());
 
         egress.example.kafka.entities.File fileEntity;
@@ -110,6 +123,8 @@ public class SimpleService {
             fileEntity = fileJpaRepo.findByIdWithLock(id).orElse(null);
         } catch (LockTimeoutException | PessimisticLockException e) {
             throw new RuntimeException("Unable to lock file entity!", e);
+        } catch (TransactionRequiredException e) {
+            throw new RuntimeException("Transaction is required...", e);
         } catch (Exception e) {
             throw new RuntimeException("Some shit went down horribly man...", e);
         }
@@ -143,7 +158,7 @@ public class SimpleService {
         }
 
 
-        fileJpaRepo.save(fileEntity);
+        fileJpaRepo.saveAndFlush(fileEntity);
         animalJpaRepo.saveAll(dto.getAnimals().stream().peek(a -> a.setStatus(Status.COMPLETED)).collect(Collectors.toUnmodifiableList()));
     }
 

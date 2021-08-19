@@ -18,14 +18,16 @@ public class LoadData implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) throws Exception {
         Faker faker = new Faker();
-        for ( int i = 0 ; i < 1 ; i++) {
+        System.out.println("Loading data...");
+        for ( int i = 0 ; i < 5000 ; i++) {
             animalJpaRepo.saveAll(gen(faker));
         }
+        System.out.println("Loaded data...");
     }
 
     private List<Animal> gen(Faker faker) {
         List<Animal> animals = new ArrayList<>();
-        for ( int i = 0 ; i < 10 ; i++) {
+        for ( int i = 0 ; i < 1000 ; i++) {
             animals.add(Animal.builder().name(faker.animal().name()).status(Status.NEW).build());
         }
         return animals;

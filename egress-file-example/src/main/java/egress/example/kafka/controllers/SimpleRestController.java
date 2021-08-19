@@ -2,6 +2,7 @@ package egress.example.kafka.controllers;
 
 import egress.example.kafka.producers.KafkaByteProducer;
 import egress.example.kafka.producers.KafkaProducer;
+import egress.example.kafka.services.BogusServiceA;
 import egress.example.kafka.services.SimpleService;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,7 @@ public class SimpleRestController {
     private KafkaByteProducer byteProducer;
 
     @Autowired private SimpleService simpleService;
+    @Autowired private BogusServiceA bogusServiceA;
 
     @Autowired private SessionFactory sessionFactory;
 
@@ -49,6 +51,12 @@ public class SimpleRestController {
     @GetMapping(value = "hit")
     public ResponseEntity<String> trigger() {
         simpleService.init();
+        return new ResponseEntity<>("OK", HttpStatus.OK);
+    }
+
+    @GetMapping(value = "hot")
+    public ResponseEntity<String> triggerHot() {
+        bogusServiceA.doIt();
         return new ResponseEntity<>("OK", HttpStatus.OK);
     }
 }

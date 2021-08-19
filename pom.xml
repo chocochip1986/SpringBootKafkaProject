@@ -48,6 +48,7 @@
         <java.version>15</java.version>
         <jaxb.version>2.3.0</jaxb.version>
         <jakarta.xml.version>3.0.0</jakarta.xml.version>
+        <mariadb.client.version>2.7.1</mariadb.client.version>
     </properties>
 
     <dependencies>
@@ -145,6 +146,11 @@
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-envers</artifactId>
             <version>5.5.5.Final</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mariadb.jdbc</groupId>
+            <artifactId>mariadb-java-client</artifactId>
+            <version>${mariadb.client.version}</version>
         </dependency>
     </dependencies>
 

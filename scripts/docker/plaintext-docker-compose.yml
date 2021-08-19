@@ -3,9 +3,20 @@ networks:
   myNetwork:
     name: myNetwork
 services:
+  maria:
+    image: mariadb:latest
+    container_name: mariadb
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_USER: 'root'
+      MYSQL_ROOT_PASSWORD: 'root'
+      MYSQL_USER: 'sa'
+      MYSQL_PASSWORD: 'pwd'
+      MYSQL_DATABASE: 'test_db'
   zookeeper:
 #    image: 'bitnami/zookeeper:3.7.0-debian-10-r96'
-    image: 'bitnami/zookeeper:3.7.0-debian-10-r96'
+    image: confluentinc/cp-zookeeper:6.2.0
     ports:
       - '2181:2181'
     networks:
@@ -13,22 +24,26 @@ services:
     container_name: zookeeper
     environment:
       ALLOW_ANONYMOUS_LOGIN: "yes"
+      ZOO_MY_ID: 1
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOO_SERVERS: server.1=zk:2888:3888
   kafka:
 #    image: 'bitnami/kafka:2.8.0-debian-10-r55'
-    image: 'bitnami/kafka:2.8.0-debian-10-r55'
+    image: confluentinc/cp-kafka:6.2.0
     ports:
       - '9092:9092'
     networks:
       - myNetwork
     container_name: kafka
     environment:
+      KAFKA_ADVERTISED_LISTENERS: LISTENER_DOCKER_INTERNAL://kafka:19092,LISTENER_DOCKER_EXTERNAL://${DOCKER_HOST_IP:-127.0.0.1}:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: LISTENER_DOCKER_INTERNAL:PLAINTEXT,LISTENER_DOCKER_EXTERNAL:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: LISTENER_DOCKER_INTERNAL
+      KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
       KAFKA_BROKER_ID: 1
-      KAFKA_CFG_ZOOKEEPER_CONNECT: "zookeeper:2181"
-      KAFKA_CFG_ADVERTISED_HOST_NAME: "kafka"
-      KAFKA_CFG_ADVERTISED_PORT: "9092"
-      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://localhost:9092"
-      KAFKA_CFG_ADVERTISED_LISTENERS: "PLAINTEXT://localhost:9092"
-      ALLOW_PLAINTEXT_LISTENER: "yes"
-      KAFKA_CFG_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1 #If you have set the TransactionalId in the ProducerConfig, then you need to make sure this factor value is the same as the number of brokers you spin up. Default is 3.
+      KAFKA_LOG4J_LOGGERS: "kafka.controller=INFO,kafka.producer.async.DefaultEventHandler=INFO,state.change.logger=INFO"
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_MAX_MESSAGE_BYTES: 2048000
+      KAFKA_MESSAGE_MAX_BYTES: 2048000
     depends_on:
       - zookeeper

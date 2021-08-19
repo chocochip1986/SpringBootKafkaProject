@@ -16,7 +16,7 @@ public interface AnimalJpaRepo extends JpaRepository<Animal, Long> {
     Optional<List<Animal>> findByIdWithPageable(Pageable pageable);
 
     @Query("SELECT a FROM Animal a WHERE a.status = 'NEW' AND a.id >= ?1 ORDER BY a.id ASC")
-    Optional<List<Animal>> findByIds(Long id);
+    Optional<List<Animal>> findByIds(Long id, Pageable pageable);
 
     @Query("SELECT COUNT(a) FROM Animal a")
     int countAll();

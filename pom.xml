@@ -41,6 +41,7 @@
         <module>simple-kafka-retry</module>
         <module>simple-kafka-committing-offsets</module>
         <module>egress-file-example</module>
+        <module>rebalancing</module>
     </modules>
 
     <properties>

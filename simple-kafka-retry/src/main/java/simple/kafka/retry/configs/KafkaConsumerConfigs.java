@@ -11,6 +11,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
+import org.springframework.kafka.listener.ContainerProperties;
+import org.springframework.kafka.listener.RecoveringBatchErrorHandler;
 import org.springframework.kafka.listener.RetryingBatchErrorHandler;
 import org.springframework.kafka.listener.SeekToCurrentBatchErrorHandler;
 import org.springframework.kafka.listener.SeekToCurrentErrorHandler;
@@ -73,7 +75,7 @@ public class KafkaConsumerConfigs {
         factory.setConsumerFactory(consumerByteFactory());
         factory.setConcurrency(1);
         factory.setBatchListener(true);
-        factory.setBatchErrorHandler(rbeh());
+        factory.setBatchErrorHandler(rebeh());
         return factory;
     }
 
@@ -137,7 +139,12 @@ public class KafkaConsumerConfigs {
     4. If retries are exhausted and recovery fails, seeks are performed as if retries are not exhausted.
      */
     @Bean
+    public RecoveringBatchErrorHandler rebeh() {
+        return new RecoveringBatchErrorHandler(new CustomRecoverer(), new FixedBackOff(0L, 0L));
+    }
+
+    @Bean
     public RetryingBatchErrorHandler rbeh() {
-        return new RetryingBatchErrorHandler(new FixedBackOff(0L, 1L), new CustomRecoverer());
+        return new RetryingBatchErrorHandler(new FixedBackOff(0L, 0L), new CustomRecoverer());
     }
 }

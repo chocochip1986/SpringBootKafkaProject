@@ -41,6 +41,7 @@ public class KafkaByteConsumer {
             String str = convert(record.value());
             if ( str.matches("^.*no\\. 5$") ) {
                 throw new BatchListenerFailedException("CANNOT LA", record);
+//                throw new RuntimeException("CANNOT LA");
             } else {
                 System.out.println("Message consumed "+convert(record.value()));
             }

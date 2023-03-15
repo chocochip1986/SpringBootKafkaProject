@@ -46,6 +46,15 @@ public class KafkaConsumerConfigs {
     }
 
     @Bean
+    public ConcurrentKafkaListenerContainerFactory<String, byte[]> kafkaByteBatchListenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, byte[]> factory = new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(consumerByteFactory());
+        factory.setConcurrency(1);
+        factory.setBatchListener(true);
+        return factory;
+    }
+
+    @Bean
     public ConcurrentKafkaListenerContainerFactory<String, byte[]> kafkaByteListenerContainerFactory() {
         ConcurrentKafkaListenerContainerFactory<String, byte[]> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerByteFactory());

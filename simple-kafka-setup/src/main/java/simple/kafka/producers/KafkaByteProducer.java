@@ -24,6 +24,14 @@ public class KafkaByteProducer {
         kafkaByteTemplate.send(topic, message.getBytes(StandardCharsets.UTF_8));
     }
 
+    public void sendMessage(String topic, Object message) throws JsonProcessingException {
+        kafkaByteTemplate.send(topic, objectMapper.writeValueAsBytes(message));
+    }
+
+    public void sendMessage(String topic, byte[] message) {
+        kafkaByteTemplate.send(topic, message);
+    }
+
     public void sendMessage(String topic, Person message) throws JsonProcessingException {
         kafkaByteTemplate.send(topic, objectMapper.writeValueAsBytes(message));
     }

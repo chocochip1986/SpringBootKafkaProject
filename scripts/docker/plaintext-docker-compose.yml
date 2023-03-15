@@ -3,17 +3,17 @@ networks:
   myNetwork:
     name: myNetwork
 services:
-  maria:
-    image: mariadb:latest
-    container_name: mariadb
-    ports:
-      - "3306:3306"
-    environment:
-      MYSQL_ROOT_USER: 'root'
-      MYSQL_ROOT_PASSWORD: 'root'
-      MYSQL_USER: 'sa'
-      MYSQL_PASSWORD: 'pwd'
-      MYSQL_DATABASE: 'test_db'
+#  maria:
+#    image: mariadb:latest
+#    container_name: mariadb
+#    ports:
+#      - "3306:3306"
+#    environment:
+#      MYSQL_ROOT_USER: 'root'
+#      MYSQL_ROOT_PASSWORD: 'root'
+#      MYSQL_USER: 'sa'
+#      MYSQL_PASSWORD: 'pwd'
+#      MYSQL_DATABASE: 'test_db'
   zookeeper:
 #    image: 'bitnami/zookeeper:3.7.0-debian-10-r96'
     image: confluentinc/cp-zookeeper:6.2.0
